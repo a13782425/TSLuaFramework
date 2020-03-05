@@ -1,0 +1,12 @@
+
+local TestPanelViewModel = BaseClass("TestPanelViewModel",BindingModel);
+
+local function Initlialize(self)
+    Logger.Log(self._name)
+    Logger.Log(self.View._name)
+end
+
+
+TestPanelViewModel.Initlialize = Initlialize
+
+return TestPanelViewModel

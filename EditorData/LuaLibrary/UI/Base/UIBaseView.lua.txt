@@ -1,0 +1,81 @@
+--[[
+-- added by wsh @ 2017-11-30
+-- UI视图层基类：该界面所有UI刷新操作，只和展示相关的数据放在这，只有操作相关数据放Model去
+-- 注意：
+-- 1、被动刷新：所有界面刷新通过消息驱动---除了打开界面时的刷新
+-- 2、对Model层可读，不可写---调试模式下强制
+-- 3、所有写数据、游戏控制操作、网络相关操作全部放Ctrl层
+-- 4、Ctrl层不依赖View层，但是依赖Model层
+-- 5、任何情况下不要在游戏逻辑代码操作界面刷新---除了打开、关闭界面
+--]]
+local UIBaseView = BaseClass("UIBaseView", UIElement)
+
+--region 创建UIView
+
+UIBaseView.gameObject = {
+    getter = function(self)
+        return self._gameObject
+    end
+}
+
+UIBaseView.transform = {
+    getter = function(self)
+        return self._transform
+    end
+}
+
+UIBaseView.rectTransform = {
+    getter = function(self)
+        return self._rectTransform
+    end
+}
+
+UIBaseView.name = {
+    getter = function(self)
+        return self.gameObject.name
+    end,
+    setter = function(self, value)
+        self.gameObject.name = tostring(value)
+    end
+}
+
+local function initialize(view, uiconfig, parent)
+    view._gameObject = GameObject.Instantiate(uiconfig.PrefabObj, parent)
+    view._transform = view.gameObject.transform
+    view._rectTransform = view.gameObject:GetComponent(typeof(RectTransform))
+end
+
+local function CheckInherit(view)
+    -- body
+    local cls = view
+    local res = false
+    while cls ~= nil do
+        if cls.ClassName == "UIBaseView" then
+            res = true
+            break
+        end
+        cls = cls.base
+    end
+    return res
+end
+
+local function CreateView(uiconfig, parent)
+    if CheckInherit(uiconfig.View) == false then
+        Logger.LogError(uiconfig.View.ClassName .. "不继承自UIBaseView")
+        return
+    end
+    local view = uiconfig.View()
+    initialize(view, uiconfig, parent)
+    view.ViewName = uiconfig.ViewName
+    view:InitializeElement()
+    view:OnCreate()
+    return view
+end
+
+function UIBaseView:OnCreate()
+    
+end
+--endregion
+UIBaseView.CreateView = CreateView
+
+return UIBaseView

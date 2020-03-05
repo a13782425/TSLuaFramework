@@ -1,0 +1,29 @@
+local BaseManager = BaseClass("BaseManager", Singleton)
+
+BaseManager.gameObject = {
+    getter = function(self)
+        return self._gameObject
+    end
+}
+BaseManager.transform = {
+    getter = function(self)
+        return self._transform
+    end
+}
+
+local function _ctor(self)
+    self._gameObject = GameObject()
+    self._gameObject.name = self.ClassName
+    self._transform = self.gameObject.transform
+    self._transform:SetParent(GameAppObj.transform)
+    self._transform.position = Vector3.New()
+end
+
+local function _dtor(self)
+    GameObject.Destroy(self.gameObject)
+end
+
+BaseManager._ctor = _ctor
+BaseManager._dtor = _dtor
+
+return BaseManager

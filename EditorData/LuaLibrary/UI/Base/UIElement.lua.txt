@@ -1,0 +1,23 @@
+--[[
+-- added by wsh @ 2017-12-08
+-- UI容器基类：当一个UI组件持有其它UI组件时，它就是一个容器类，它要负责调度其它UI组件的相关函数
+-- 注意：
+-- 1、window.view是窗口最上层的容器类
+-- 2、AddComponent用来添加组件，一般在window.view的OnCreate中使用，RemoveComponent相反
+-- 3、GetComponent用来获取组件，GetComponents用来获取一个类别的组件
+-- 4、很重要：子组件必须保证名字互斥，即一个不同的名字要保证对应于Unity中一个不同的Transform
+--]]
+local UIElement = BaseClass("UIElement");
+
+local function __init(self)
+    self.gameObject = nil
+    self.transform = nil
+    self.rectTransform = nil
+    self.name = nil
+end
+
+
+
+UIElement.__init = __init
+
+return UIElement

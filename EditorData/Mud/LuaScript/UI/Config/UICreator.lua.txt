@@ -1,0 +1,16 @@
+
+local TestPanelView = require 'UI.Panel.TestPanel.View.TestPanelView'
+
+TestPanelView.InitializeElement = function(self)
+    self.name = "cc"
+    self.raw_img_aa = self.transform:Find('img_aa'):GetComponent(typeof(Image))
+    self.raw_btn_test = self.transform:Find('btn_test'):GetComponent(typeof(Button))
+end
+
+local TestPanel1View = require 'UI.Panel.TestPanel1.View.TestPanel1View'
+
+TestPanel1View.InitializeElement = function(self)
+    self.name = "bb"
+    --self.raw_img_aa = self.transform:Find('img_aa'):GetComponent(typeof(Image))
+    --self.raw_btn_test = self.transform:Find('btn_test'):GetComponent(typeof(Button))
+end

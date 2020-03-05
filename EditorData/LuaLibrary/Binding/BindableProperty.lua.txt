@@ -1,0 +1,16 @@
+--[[
+    绑定数据类型
+]] --
+
+local BindableProperty = BaseClass("BindableProperty")
+
+BindableProperty.Value = {
+    getter = function(self)
+        return self._value
+    end,
+    setter = function(self, value)
+        self._value = value
+    end
+}
+
+return BindableProperty

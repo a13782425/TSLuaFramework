@@ -1,0 +1,15 @@
+{
+    "name": "TSLuaFramework.Editor",
+    "references": [
+        "GUID:e897dacfe6d071d4cb62553a3fef7d42"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

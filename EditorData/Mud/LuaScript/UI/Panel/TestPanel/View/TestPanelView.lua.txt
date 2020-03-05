@@ -1,0 +1,11 @@
+
+local TestPanelView = BaseClass("TestPanelView",UIBaseView)
+
+local function OnCreate(self)
+    self.raw_img_aa.color = Color.New(1,0,0)
+    
+end
+
+
+TestPanelView.OnCreate = OnCreate 
+return TestPanelView

@@ -1,0 +1,90 @@
+
+-- Begin Custom Lua
+Logger = require 'Logger.Logger'
+
+require 'Tool.GameUtils'
+require 'Tool.TableUtils'
+require 'Tool.StringUtils'
+---引用基类,object
+require 'Common.Class.BaseClass'
+require 'Common.Class.DataClass' 
+require 'Common.Class.ConstClass'
+Singleton = require 'Common.Class.Singleton'
+UpdatableSingleton = require 'Common.Class.UpdatableSingleton'
+Messenger = require 'Common.Class.Messenger'
+BaseManager = require 'Common.Class.BaseManager'
+
+---工具类
+List = require 'Tool.list'
+require 'Tool.event'
+require 'Update.Coroutine'
+Timer = require 'Update.Timer'
+
+-- Unity
+Color = require 'Common.UnityEngine.Color'
+LayerMask = require 'Common.UnityEngine.LayerMask'
+Mathf = require 'Common.UnityEngine.Mathf'
+require 'Common.UnityEngine.Object'
+Plane = require 'Common.UnityEngine.Plane'
+Time = require 'Common.UnityEngine.Time'
+Vector2 = require 'Common.UnityEngine.Vector2'
+Vector3 = require 'Common.UnityEngine.Vector3'
+Vector4 = require 'Common.UnityEngine.Vector4'
+Ray = require 'Common.UnityEngine.Ray'
+RaycastHit = require 'Common.UnityEngine.RaycastHit'
+Touch = require 'Common.UnityEngine.Touch'
+Bounds = require 'Common.UnityEngine.Bounds'
+Quaternion = require 'Common.UnityEngine.Quaternion'
+
+--数据绑定
+Observeable = require 'Binding.Observeable'
+---VM的基类
+BindingModel = require 'Binding.BindingModel'
+--UI
+UIElement = require 'UI.Base.UIElement'
+UIBaseView = require 'UI.Base.UIBaseView'
+UIViewConfig = require 'UI.UIViewConfig'
+
+
+-- End Custom Lua
+
+
+
+--Begin Custom C#
+
+--App表为隐藏表
+--App.debug 调试模式
+--App.gamePath 当前游戏路径
+--App.gameDataPath 当前游戏数据路径
+--App.gameAssetBundlePath 当前游戏资源路径
+
+
+--End Custom
+
+
+--Begin Unity
+
+---游戏物体
+GameObject = CS.UnityEngine.GameObject
+Transform = CS.UnityEngine.Transform
+HideFlags = CS.UnityEngine.HideFlags
+Camera = CS.UnityEngine.Camera
+RectTransform = CS.UnityEngine.RectTransform
+Canvas = CS.UnityEngine.Canvas
+CanvasGroup = CS.UnityEngine.CanvasGroup
+RenderMode = CS.UnityEngine.RenderMode
+CanvasScaler = CS.UnityEngine.UI.CanvasScaler
+GraphicRaycaster = CS.UnityEngine.UI.GraphicRaycaster
+--UI
+Image = CS.UnityEngine.UI.Image
+RawImage = CS.UnityEngine.UI.RawImage
+Button = CS.UnityEngine.UI.Button
+Text = CS.UnityEngine.UI.Text
+InputField = CS.UnityEngine.UI.InputField
+Toggle = CS.UnityEngine.UI.Toggle
+ToggleGroup = CS.UnityEngine.UI.ToggleGroup
+Slider = CS.UnityEngine.UI.Slider
+Scrollbar = CS.UnityEngine.UI.Scrollbar
+Dropdown = CS.UnityEngine.UI.Dropdown
+ScrollRect = CS.UnityEngine.UI.ScrollRect
+--End Unity

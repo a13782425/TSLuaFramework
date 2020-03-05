@@ -1,0 +1,348 @@
+--[[
+-- Lua面向对象设计
+--]]
+--保存类类型的虚表
+local _class = {}
+
+--已经定义过的类
+local classList = {}
+
+-- 自定义类型
+ClassType = {
+    class = 1,
+    instance = 2
+}
+--关键字
+local Keywords = {
+    __call = 1,
+    __index = 1,
+    __newindex = 1,
+    __originName = 1,
+    ClassType = 1,
+    ClassName = 1,
+    base = 1,
+    _ctor = 1,
+    _dtor = 1
+}
+---所有类的基类
+local Object = {
+    base = nil,
+    ---类名
+    ClassName = "Object",
+    ClassType = ClassType.class,
+    __init = false,
+    __delete = false,
+    ---构造函数
+    _dtor = function()
+    end,
+    ---析构函数
+    _ctor = function()
+    end
+}
+---验证默认方法是否存在
+local function checkDefaultFunc(class)
+    local cls = class
+    local nilFunc = function()
+    end
+    while cls ~= nil do
+        --构造函数
+        local tor = rawget(cls, "_ctor")
+        if tor == nil then
+            rawset(cls, "_ctor", nilFunc)
+        elseif type(tor) ~= "function" then
+            rawset(cls, "_ctor", nilFunc)
+        end
+        --析构函数
+        tor = rawget(cls, "_dtor")
+        if tor == nil then
+            rawset(cls, "_dtor", nilFunc)
+        elseif type(tor) ~= "function" then
+            rawset(cls, "_dtor", nilFunc)
+        end
+        cls = cls.base
+    end
+end
+
+--访问属性和方法
+local function __index(table, key)
+    if key == "base" or key == "__originName" then
+        return rawget(table, key)
+    end
+    local meta = getmetatable(table)
+    meta = getmetatable(meta.instance)
+    local value = meta.__attributes[key]
+    if value ~= nil then
+        if value.getter == nil then
+            error("属性[" .. key .. "]为只写属性", 2)
+        end
+        return value.getter(meta.instance)
+    end
+    value = meta.__fields[key]
+    if value ~= nil then
+        return value
+    end
+    local originName = table.__originName
+    --如果使用self调用
+    if originName == meta.instance.__originName then
+        value = meta.__functions.__lastFuncs[key]
+        if value ~= nil then
+            return value
+        end
+    else
+        --使用base调用
+        value = meta.__functions[originName][key]
+        if value ~= nil then
+            return value
+        else
+            error("父类:[" .. originName .. "]中没有方法:[" .. key .. "]")
+        end
+    end
+    local cls = meta.class
+    while (cls ~= nil) do
+        value = cls[key]
+        if value ~= nil then
+            return value
+        end
+        cls = cls.base
+    end
+    return value
+end
+--修改属性和方法
+local function __newindex(table, key, value)
+    -- Logger.Log(key)
+    if Keywords[key] then
+        error(key .. " 是只读属性,不能修改 !!", 2)
+    end
+
+    local newType = type(value)
+    if newType ~= "function" then
+        if newType == "table" then
+            if value.setter == nil and value.gettter == nil then
+                newType = "field"
+            else
+                newType = "prop"
+            end
+        else
+            newType = "field"
+        end
+    end
+
+    local meta = getmetatable(table)
+    --先在基础变量中查找
+    local val = meta.__attributes[key]
+    --当Value 是属性的时候
+    if val ~= nil then
+        if val.setter == nil then
+            error("属性[" .. key .. "]为只读属性", 2)
+        end
+        val.setter(meta.instance, value)
+        return
+    end
+    val = meta.__fields[key]
+    if val ~= nil then
+        --当新类型不是字段的时候
+        if newType ~= "field" then
+            error("正在给字段[" .. key .. "]赋值其他类型,请检查", 2)
+        end
+        meta.__fields[key] = value
+        return
+    end
+    val = meta.__functions.__lastFuncs[key]
+    if val ~= nil then
+        --当新类型不是字段的时候
+        if newType ~= "function" then
+            error("正在给方法[" .. key .. "]赋值其他类型,请检查", 2)
+        end
+        meta.__functions.__lastFuncs[key] = value
+        return
+    end
+
+    --当基础变量中不存在则新增变量
+    if newType == "function" then
+        meta.__functions.__lastFuncs[key] = value
+    elseif newType == "prop" then
+        meta.__attributes[key] = value
+    else
+        meta.__fields[key] = value
+    end
+end
+
+---解析一个类
+local function parseClass(class)
+    local cls = class
+    --查找类链
+    local _clsListTemp = {}
+    while (cls ~= nil) do
+        table.insert(_clsListTemp, cls)
+        cls = cls.base
+    end
+    -- 所有字段
+    local fields = {} --Map<类名,Map<名称,Value>>
+    -- 所有属性
+    local attributes = {} -- Map<类名, Map<属名,value> >
+    -- 所有方法
+    local functions = {} -- Map<类名, Map<方法名,func> >
+    --保存最后实现的那些方法. 实现多态.
+    functions.__lastFuncs = {}
+    --先从上往下依次调用类链中的所有方法.
+    local _cls = nil
+    for i = #_clsListTemp, 1, -1 do
+        _cls = _clsListTemp[i]
+        local className = _cls.ClassName
+        functions[className] = {}
+        fields[className] = {}
+        attributes[className] = {}
+        --找出方法,保存到方法列表中
+        for k, v in pairs(_cls) do
+            local typeName = type(v)
+            if typeName == "function" then
+                functions[className][k] = v
+                --Logger.Log(className .. "   " .. k)
+                if k ~= "_ctor" and k ~= "_dtor" then
+                    functions.__lastFuncs[k] = v
+                end
+            elseif typeName == "table" then
+                if v.setter ~= nil or v.getter ~= nil then
+                    attributes[k] = v
+                else
+                    if Keywords[k] == nil then
+                        fields[k] = v
+                    end
+                end
+            else
+                if Keywords[k] == nil then
+                    fields[k] = v
+                end
+            end
+        end
+    end
+    return fields, attributes, functions
+end
+
+--创建一个心类
+local function newClass(class, ...)
+    --Logger.Log("newClass")
+    --obj是一个对象
+    checkDefaultFunc(class)
+    local obj = {}
+    local meta = {instance = obj, class = class}
+    meta.__mode = "kv"
+    obj.__originName = class.ClassName
+    local fields, attributes, functions = parseClass(class)
+    meta.__fields = fields
+    meta.__attributes = attributes
+    meta.__functions = functions
+    meta.__fields.ClassName = class.ClassName
+    meta.__fields.ClassType = ClassType.instance
+    fields = nil
+    attributes = nil
+    functions = nil
+    local finishClass = {}
+    finishClass[class.ClassName] = 1
+    createBase = function(o, c)
+        if c.base then
+            if finishClass[c.base.ClassName] then
+                finishClass = nil
+                error("请检查是否递归继承 ClassName: " .. c.base.ClassName, 2)
+            end
+            o.base = {
+                __originName = c.base.ClassName
+            }
+            setmetatable(o.base, meta)
+            createBase(o.base, c.base)
+        end
+    end
+    createBase(obj, class)
+    finishClass = nil
+    setmetatable(obj, meta)
+    meta.__index = __index
+    meta.__newindex = __newindex
+    create = function(c, ...)
+        if c.base then
+            create(c.base, ...)
+        end
+        c._ctor(obj, ...)
+    end
+    create(obj, ...)
+    obj.__init = true
+    return obj
+end
+
+---基类,类似C#的object
+---__init 为构造函数
+---__delete 为析构函数
+---@param classname 类名
+---@param base 父类表
+function BaseClass(classname, base)
+    assert(type(classname) == "string" and #classname > 0)
+    assert(classList[classname] == nil, '"' .. tostring(classname) .. '" 重复定义!!')
+    local clsSource = {}
+    --基类
+    local baseClass = {}
+    --当有父类
+    if base then
+        baseClass = classList[base.ClassName]
+        if baseClass == nil then
+            error('"' .. tostring(base.ClassName) .. '" 父类不存在!!', 2)
+        end
+    else
+        baseClass = Object
+    end
+    local vtbl = {}
+    setmetatable(
+        clsSource,
+        {
+            __call = newClass,
+            __index = function(t, k)
+                local cls = t
+                local val = nil
+                while cls ~= nil do
+                    val = rawget(cls, k)
+                    if val then
+                        return val
+                    end
+                    cls = rawget(cls, "base")
+                end
+                return val
+            end
+        }
+    )
+
+    clsSource.base = baseClass
+    clsSource.ClassName = classname
+    clsSource.ClassType = ClassType.class
+    clsSource.__init = false
+    clsSource.__delete = false
+    classList[classname] = clsSource
+
+    return clsSource
+end
+
+---删除一个实例,调用完方法请执行 class = nil
+---@param class 一个实例
+function delete(class)
+    if (class.ClassType ~= ClassType.instance) then
+        error("要删除的不是一个实例")
+    end
+    del = function(c, ...)
+        c._dtor(class, ...)
+        if c.base then
+            del(c.base, ...)
+        end
+    end
+    del(class)
+    local meta = getmetatable(class)
+    meta.__fields = nil
+    meta.__attributes = nil
+    meta.__functions = nil
+    meta.instance = nil
+    meta.class = nil
+    meta.__call = nil
+    meta.__index = function()
+        error("你正在访问一个删除的对象")
+    end
+    meta.__newindex = function()
+        error("你正在访问一个删除的对象")
+    end
+    class = nil
+end

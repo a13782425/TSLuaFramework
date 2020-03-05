@@ -1,0 +1,27 @@
+--[[
+    绑定数据模型基类
+]]--
+
+local BindingModel = BaseClass('BindingModel')
+
+
+local function __init(self,view)
+    self.View = view
+end
+
+---初始化
+local function Initlialize(self)
+    -- body
+end
+
+---释放
+local function Dispose(self)
+    -- body
+end
+
+
+---不要重写
+BindingModel.__init = __init
+BindingModel.Initlialize = Initlialize
+BindingModel.Dispose = Dispose
+return BindingModel

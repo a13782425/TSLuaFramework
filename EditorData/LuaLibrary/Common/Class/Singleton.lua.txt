@@ -1,0 +1,32 @@
+--[[
+-- 单例类
+--]]
+local Singleton = BaseClass("Singleton")
+
+
+local function _ctor(self)
+end
+
+local function _dtor(self)
+	self.Instance = nil
+end
+
+-- 只是用于启动模块
+local function Startup(self)
+end
+
+-- 不要重写
+local function GetInstance(self)
+	if self.Instance == nil then
+		self.Instance = self();
+	end
+	return self.Instance
+end
+
+Singleton._ctor = _ctor
+Singleton._dtor = _dtor
+Singleton.Startup = Startup
+Singleton.GetInstance = GetInstance
+Singleton.Destory = Destory
+
+return Singleton

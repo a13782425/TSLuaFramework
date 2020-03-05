@@ -1,0 +1,31 @@
+local UIManager = BaseClass("UIManager", Singleton)
+local UIModule = nil;
+
+local MainUIObj = nil;
+local MainRectTran = nil;
+
+-- 启动
+local function Startup(self)
+    self:Dispose()
+    UIModule = CS.TSLuaFramework.Module.SubGameModule.Instance:GetUIModule(App.gameGUID);
+    MainUIObj = UIModule.MainUIObj
+    MainRectTran = UIModule.MainRectTran
+
+end
+
+local function callback(obj)
+    GameObject.Instantiate(obj,MainRectTran);
+end
+
+local function CreateTest()
+    ResourcesManager:GetInstance():GetAssetByName("testPanel",callback)
+end
+
+-- 释放
+local function Dispose(self)
+end
+
+UIManager.Startup = Startup
+UIManager.Dispose = Dispose
+UIManager.CreateTest = CreateTest;
+return UIManager;

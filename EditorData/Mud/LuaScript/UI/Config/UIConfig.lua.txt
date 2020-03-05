@@ -1,0 +1,27 @@
+--[[
+-- UI模块配置表，添加新UI模块时需要在此处加入
+--]]
+
+local UIConfig = {
+    Panel = {
+        TestPanel = {
+            --页面所在层级
+            Layer = UILayerEnum.Fixed,
+            --页面名称
+            PanelName = 'TestPanel',
+            --页面预制的名称
+            PrefabName = 'testpanel',
+            View = require 'UI.Panel.TestPanel.View.TestPanelView',
+            ViewModel = require 'UI.Panel.TestPanel.ViewModel.TestPanelViewModel',
+        },
+        TestPanel1 = {
+            Layer = UILayerEnum.Fixed,
+            PanelName = 'TestPanel1',
+            PrefabName = 'testpanel1',
+            View = require 'UI.Panel.TestPanel1.View.TestPanel1View',
+            ViewModel = nil
+        }
+    },
+    Item = {}
+}
+return ConstClass("UIConfig", UIConfig);

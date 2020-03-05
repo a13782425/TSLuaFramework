@@ -1,0 +1,12 @@
+
+-- Manager
+UpdateManager = require 'Manager.UpdateManager'
+TimerManager = require 'Manager.TimerManager'
+ResourcesManager = require 'Manager.ResourcesManager'
+UIManager = require 'Manager.UIManager'
+CameraManager = require 'Manager.CameraManager'
+-- UI
+UIConfig = require 'UI.Config.UIConfig'
+UICreator = require 'UI.Config.UICreator'
+
+GameAppObj = GameObject.Find("GameApp")
