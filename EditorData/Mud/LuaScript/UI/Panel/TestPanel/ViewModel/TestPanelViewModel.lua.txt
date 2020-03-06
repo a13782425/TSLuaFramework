@@ -1,12 +1,15 @@
 
 local TestPanelViewModel = BaseClass("TestPanelViewModel",BindingModel);
 
-local function Initlialize(self)
-    Logger.Log(self._name)
-    Logger.Log(self.View._name)
+TestPanelViewModel.aa_color = BindableProperty("aa_color");
+
+
+
+function TestPanelViewModel:Initlialize()
+    
 end
 
 
-TestPanelViewModel.Initlialize = Initlialize
+
 
 return TestPanelViewModel

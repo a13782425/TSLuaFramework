@@ -3,25 +3,14 @@
 <linker>
 
 	<assembly fullname="mscorlib">
-	    <type fullname="System.IO.BinaryWriter" preserve="all"/>
-		<type fullname="System.Object" preserve="all"/>
+	    <type fullname="System.Object" preserve="all"/>
 		<type fullname="System.GC" preserve="all"/>
-		
-	</assembly>
-
-	<assembly fullname="TSLuaFramework">
-	    <type fullname="BinaryWriterExtentions" preserve="all"/>
-		<type fullname="UnityEngineObjectExtention" preserve="all"/>
-		<type fullname="TSLuaFramework.UnityLogger" preserve="all"/>
-		<type fullname="TSLuaFramework.Module.AssetBundleModule" preserve="all"/>
+		<type fullname="System.IO.BinaryWriter" preserve="all"/>
 		
 	</assembly>
 
 	<assembly fullname="UnityEngine.CoreModule">
-	    <type fullname="UnityEngine.WaitForSeconds" preserve="all"/>
-		<type fullname="UnityEngine.WaitForEndOfFrame" preserve="all"/>
-		<type fullname="UnityEngine.WaitForFixedUpdate" preserve="all"/>
-		<type fullname="UnityEngine.Object" preserve="all"/>
+	    <type fullname="UnityEngine.Object" preserve="all"/>
 		<type fullname="UnityEngine.Ray2D" preserve="all"/>
 		<type fullname="UnityEngine.GameObject" preserve="all"/>
 		<type fullname="UnityEngine.Component" preserve="all"/>
@@ -55,11 +44,9 @@
 		<type fullname="UnityEngine.RectOffset" preserve="all"/>
 		<type fullname="UnityEngine.Sprite" preserve="all"/>
 		<type fullname="UnityEngine.PlayerPrefs" preserve="all"/>
-		
-	</assembly>
-
-	<assembly fullname="UnityEngine.UnityWebRequestModule">
-	    <type fullname="UnityEngine.Networking.UnityWebRequest" preserve="all"/>
+		<type fullname="UnityEngine.WaitForSeconds" preserve="all"/>
+		<type fullname="UnityEngine.WaitForEndOfFrame" preserve="all"/>
+		<type fullname="UnityEngine.WaitForFixedUpdate" preserve="all"/>
 		
 	</assembly>
 
@@ -80,20 +67,14 @@
 		
 	</assembly>
 
-	<assembly fullname="UnityEngine.PhysicsModule">
-	    <type fullname="UnityEngine.RaycastHit" preserve="all"/>
-		
-	</assembly>
-
-	<assembly fullname="UnityEngine.UIModule">
-	    <type fullname="UnityEngine.RenderMode" preserve="all"/>
-		<type fullname="UnityEngine.Canvas" preserve="all"/>
-		<type fullname="UnityEngine.CanvasGroup" preserve="all"/>
+	<assembly fullname="UnityEngine.UnityWebRequestModule">
+	    <type fullname="UnityEngine.Networking.UnityWebRequest" preserve="all"/>
 		
 	</assembly>
 
 	<assembly fullname="UnityEngine.UI">
-	    <type fullname="UnityEngine.UI.CanvasScaler" preserve="all"/>
+	    <type fullname="UnityEngine.EventSystems.EventTriggerType" preserve="all"/>
+		<type fullname="UnityEngine.UI.CanvasScaler" preserve="all"/>
 		<type fullname="UnityEngine.UI.CanvasScaler+ScaleMode" preserve="all"/>
 		<type fullname="UnityEngine.UI.CanvasScaler+ScreenMatchMode" preserve="all"/>
 		<type fullname="UnityEngine.UI.GraphicRaycaster" preserve="all"/>
@@ -110,6 +91,28 @@
 		<type fullname="UnityEngine.UI.GridLayoutGroup" preserve="all"/>
 		<type fullname="UnityEngine.UI.ContentSizeFitter" preserve="all"/>
 		<type fullname="UnityEngine.UI.Slider" preserve="all"/>
+		
+	</assembly>
+
+	<assembly fullname="UnityEngine.PhysicsModule">
+	    <type fullname="UnityEngine.RaycastHit" preserve="all"/>
+		
+	</assembly>
+
+	<assembly fullname="UnityEngine.UIModule">
+	    <type fullname="UnityEngine.RenderMode" preserve="all"/>
+		<type fullname="UnityEngine.Canvas" preserve="all"/>
+		<type fullname="UnityEngine.CanvasGroup" preserve="all"/>
+		
+	</assembly>
+
+	<assembly fullname="TSLuaFramework">
+	    <type fullname="TSLuaFramework.UnityLogger" preserve="all"/>
+		<type fullname="TSLuaFramework.Module.AssetBundleModule" preserve="all"/>
+		<type fullname="TSLuaFramework.Tool.GameTool" preserve="all"/>
+		<type fullname="TSLuaFramework.Tool.UIEvent" preserve="all"/>
+		<type fullname="BinaryWriterExtentions" preserve="all"/>
+		<type fullname="UnityEngineObjectExtention" preserve="all"/>
 		
 	</assembly>
 

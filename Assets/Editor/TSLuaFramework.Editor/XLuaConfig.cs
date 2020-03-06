@@ -40,6 +40,7 @@ public static class XLuaConfig
         typeof(UnityEngine.Camera),
         typeof(UnityEngine.CameraClearFlags),
         typeof(UnityEngine.HideFlags),
+        typeof(UnityEngine.EventSystems.EventTriggerType),
 
         // unity结合lua，这部分导出很多功能在lua侧重新实现，没有实现的功能才会跑到cs侧
         typeof(UnityEngine.Bounds),
@@ -102,6 +103,12 @@ public static class XLuaConfig
         typeof(System.Action<UnityEngine.Object>),
         typeof(TSLuaFramework.UnityLogger),
         typeof(TSLuaFramework.Module.AssetBundleModule),
+        typeof(TSLuaFramework.Tool.GameTool),
+        typeof(TSLuaFramework.Tool.UIEvent),
+        typeof(System.Action<UnityEngine.EventSystems. PointerEventData>),
+        typeof(System.Action<UnityEngine.EventSystems.BaseEventData>),
+        typeof(System.Action<UnityEngine.EventSystems.AxisEventData>),
+
     };
     //C#静态调用Lua的配置（包括事件的原型），仅可以配delegate，interface
 

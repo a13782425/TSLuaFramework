@@ -7,17 +7,196 @@
 -- 3、GetComponent用来获取组件，GetComponents用来获取一个类别的组件
 -- 4、很重要：子组件必须保证名字互斥，即一个不同的名字要保证对应于Unity中一个不同的Transform
 --]]
-local UIElement = BaseClass("UIElement");
+---@class 所有UI的基类
+local UIElement = BaseClass("UIElement")
 
-local function __init(self)
-    self.gameObject = nil
-    self.transform = nil
-    self.rectTransform = nil
-    self.name = nil
+local GameTool = CS.TSLuaFramework.Tool.GameTool
+
+local EventTriggerType = CS.UnityEngine.EventSystems.EventTriggerType
+
+--region 属性开始
+
+---实例ID
+UIElement.InstanceId = {
+    getter = function(self)
+        return self._instanceId
+    end
+}
+
+---游戏物体
+UIElement.gameObject = {
+    getter = function(self)
+        return self._gameObject
+    end
+}
+---游戏物体的Transform
+UIElement.transform = {
+    getter = function(self)
+        return self._transform
+    end
+}
+---游戏物体的RectTransform
+UIElement.rectTransform = {
+    getter = function(self)
+        return self._rectTransform
+    end
+}
+---元素名
+UIElement.name = {
+    getter = function(self)
+        return self.gameObject.name
+    end,
+    setter = function(self, value)
+        self.gameObject.name = tostring(value)
+    end
+}
+---隐藏标识符
+UIElement.hideFlags = {
+    getter = function(self)
+        return self.gameObject.hideFlags
+    end,
+    setter = function(self, value)
+        self.gameObject.hideFlags = value
+    end
+}
+---是否处于激活状态
+UIElement.active = {
+    getter = function(self)
+        return self.gameObject.activeSelf
+    end,
+    setter = function(self, value)
+        local temp = self.active
+        if (temp ~= value) then
+            if (value) then
+                self.gameObject:SetActive(value)
+                self:Internal_OnEnable()
+            else
+                self:Internal_OnDisable()
+                self.gameObject:SetActive(value)
+            end
+        end
+    end
+}
+--类对表的错误
+UIElement.Test = {}
+
+UIElement.onPointerClick = {
+    addEvent = function(self)
+        Logger.Log('...'..tostring(self))
+    end
+}
+--endregion 属性结束
+
+--region 私有函数开始
+
+--endregion 私有函数结束
+
+---构造函数
+function UIElement:_ctor(obj)
+    if obj then
+        self._gameObject = obj.gameObject
+        self._transform = obj.transform
+        self._rectTransform = obj:GetComponent(typeof(RectTransform))
+    else
+        self._gameObject = nil
+        self._transform = nil
+        self._rectTransform = nil
+    end
+    self._instanceId = GameTool.GetInstanceId()
 end
 
+--region 公共虚函数开始(所有子类可重写)
 
+---激活时调用
+function UIElement:OnEnable()
+end
+---隐藏时调用
+function UIElement:OnDisable()
+end
+---释放时调用
+function UIElement:OnDestroy()
+end
 
-UIElement.__init = __init
+--endregion 公共虚函数结束
+
+--region 私有虚函数开始(内部子类可重写)
+
+---激活时调用函数(子类禁止重写)
+function UIElement:Internal_OnEnable()
+    self:OnEnable()
+end
+---隐藏时调用函数(子类禁止重写)
+function UIElement:Internal_OnDisable()
+    self:OnDisable()
+end
+---释放时调用函数(子类禁止重写)
+function UIElement:Internal_OnDestroy()
+    self:OnDestroy()
+end
+
+--endregion 私有虚函数结束
+
+--region 静态方法
+
+function UIElement.Destroy(element)
+    element.active = false
+    element:Internal_OnDestroy()
+    Object.Destroy(element.gameObject)
+    element._gameObject = nil
+    GameTool.RecoverInstanceId(element.InstanceId)
+    delete(element)
+    element = nil
+end
+function UIElement.DestroyImmediate(element)
+    element.active = false
+    element:Internal_OnDestroy()
+    Object.DestroyImmediate(element.gameObject)
+    element._gameObject = nil
+    GameTool.RecoverInstanceId(element.InstanceId)
+    delete(element)
+    element = nil
+end
+
+--endregion 静态方法结束
+
+--region 公共函数（不可重写）
+
+---设置父物体
+---@param parent 父物体tran
+function UIElement:SetParent(parent)
+    self.transform:SetParent(parent.transform)
+end
+
+function UIElement:DontDestroyOnLoad()
+    Object.DontDestroyOnLoad(self.gameObject)
+end
+
+function UIElement:Close()
+    self.Destroy(self)
+end
+
+---添加一个组件
+---@param component 组件类型typeof
+---@return 返回一个组件实例
+function UIElement:AddComponent(component)
+    return self.gameObject:AddComponent(component)
+end
+---获取一个组件
+---@param component 组件类型<typeof>
+---@return 返回一个组件实例
+function UIElement:GetComponent(component)
+    return self.gameObject.GetComponent(component)
+end
+
+-- ---添加一个点击事件
+-- ---@param func 点击事件会掉<PointerEventData>
+-- function UIElement:onPointerClick(func)
+--     if self.UIEvent == nil then
+--         self.UIEvent = CS.TSLuaFramework.Tool.UIEvent(self.gameObject)
+--     end
+--     self.UIEvent:AddPointerEvent(EventTriggerType.PointerClick,func)
+-- end
+
+--endregion 公共函数（不可重写）
 
 return UIElement

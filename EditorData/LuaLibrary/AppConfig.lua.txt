@@ -15,7 +15,14 @@ Messenger = require 'Common.Class.Messenger'
 BaseManager = require 'Common.Class.BaseManager'
 
 ---工具类
-List = require 'Tool.list'
+
+---链表
+List = require 'Container.list'
+---集合
+Set = require 'Container.Set'
+---栈
+Stack = require 'Container.Stack'
+
 require 'Tool.event'
 require 'Update.Coroutine'
 Timer = require 'Update.Timer'
@@ -40,9 +47,10 @@ Quaternion = require 'Common.UnityEngine.Quaternion'
 Observeable = require 'Binding.Observeable'
 ---VM的基类
 BindingModel = require 'Binding.BindingModel'
+BindableProperty = require 'Binding.BindableProperty'
 --UI
 UIElement = require 'UI.Base.UIElement'
-UIBaseView = require 'UI.Base.UIBaseView'
+UIView = require 'UI.Base.UIView'
 UIViewConfig = require 'UI.UIViewConfig'
 
 
@@ -52,12 +60,6 @@ UIViewConfig = require 'UI.UIViewConfig'
 
 --Begin Custom C#
 
---App表为隐藏表
---App.debug 调试模式
---App.gamePath 当前游戏路径
---App.gameDataPath 当前游戏数据路径
---App.gameAssetBundlePath 当前游戏资源路径
-
 
 --End Custom
 
@@ -65,6 +67,7 @@ UIViewConfig = require 'UI.UIViewConfig'
 --Begin Unity
 
 ---游戏物体
+Object = CS.UnityEngine.Object
 GameObject = CS.UnityEngine.GameObject
 Transform = CS.UnityEngine.Transform
 HideFlags = CS.UnityEngine.HideFlags

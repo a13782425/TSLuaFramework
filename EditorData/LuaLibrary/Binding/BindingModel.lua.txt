@@ -1,12 +1,14 @@
 --[[
     绑定数据模型基类
-]]--
+]] --
 
-local BindingModel = BaseClass('BindingModel')
+local BindingModel = BaseClass("BindingModel")
 
-
-local function __init(self,view)
+local function _ctor(self, view)
     self.View = view
+    self:Initlialize()
+end
+local function _dtor(self)
 end
 
 ---初始化
@@ -19,9 +21,9 @@ local function Dispose(self)
     -- body
 end
 
-
 ---不要重写
-BindingModel.__init = __init
+BindingModel._ctor = _ctor
+BindingModel._dtor = _dtor
 BindingModel.Initlialize = Initlialize
 BindingModel.Dispose = Dispose
 return BindingModel

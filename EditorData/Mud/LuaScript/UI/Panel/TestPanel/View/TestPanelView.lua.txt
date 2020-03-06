@@ -1,11 +1,30 @@
+local TestPanelView = BaseClass("TestPanelView", UIView)
 
-local TestPanelView = BaseClass("TestPanelView",UIBaseView)
+function TestPanelView:OnCreate()
+    self.raw_img_aa.color = Color(1, 0, 0)
+    Logger.Log("TestPanelView")
+    self.BindContext = Observeable()
+    self.ViewModel = UIConfig.Panel.TestPanel.ViewModel(self)
+    self.BindContext.SourceData = self.ViewModel
+    self.Test.C = "cbbbb"
+    local test = UIElement(self.raw_img_aa)
+    -- test:onPointerClick(
+    --     function(data)
+    --         print("onPointerClick")
+    --     end
+    -- )
+    print(test.Test.C)
+    test.onPointerClick.addEvent = nil
+    print("onPointerClick")
+    --self.BindContext:Bind(self.ViewModel.aa_color)
+    --self.BindContext = UIConfig.Panel.TestPanel.ViewModel(self)
+    -- self.BindContext.aa_color:Subscribe(
+    --     function(old, new)
+    --         self.raw_img_aa.color = new
+    --     end
+    -- )
 
-local function OnCreate(self)
-    self.raw_img_aa.color = Color.New(1,0,0)
-    
+    --self.BindContext.aa_color.Value = Color(1, 1, 0)
 end
 
-
-TestPanelView.OnCreate = OnCreate 
 return TestPanelView

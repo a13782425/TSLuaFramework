@@ -1,0 +1,60 @@
+local Stack = BaseClass("Stack")
+
+function Stack:_ctor()
+    self.Stack_table = {}
+    self.StackSize = 0
+end
+function Stack:_dtor()
+    self.Stack_table = nil
+end
+
+function Stack:Size()
+    return self.StackSize or 0
+end
+
+function Stack:Push(element)
+    local size = self:Size()
+    self.Stack_table[size + 1] = element
+    self.StackSize = size + 1
+end
+
+function Stack:Pop()
+    local size = self:Size()
+
+    if self:IsEmpty() then
+        Logger.LogError("Error:Stack is emtpy")
+        return
+    end
+
+    self.StackSize = size - 1
+    return table.remove(self.Stack_table, size)
+end
+
+function Stack:IsEmpty()
+    local size = self:Size()
+
+    if size == 0 then
+        return true
+    end
+
+    return false
+end
+
+function Stack:Clear()
+    self.StackSize = 0
+    self.Stack_table = nil
+    self.Stack_table = {}
+end
+
+function Stack:Top() --弹栈顶 不删除
+    local size = self:Size()
+
+    if self:IsEmpty() then
+        Logger.LogError("Error:Stack is emtpy")
+        return
+    end
+
+    return self.Stack_table[size]
+end
+
+return Stack

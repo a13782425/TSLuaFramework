@@ -1,0 +1,6 @@
+local UIImage = BaseClass("UIImage",UIElement)
+
+
+
+
+return UIImage

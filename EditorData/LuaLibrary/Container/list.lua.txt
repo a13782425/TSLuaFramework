@@ -20,10 +20,11 @@ function list:clear()
 	self._prev = self
 	self.length = 0
 end
-
-function list:push(value)
+---添加一个数据
+---@param item 数据
+function list:push(item)
 	--assert(value)
-	local node = {value = value, _prev = 0, _next = 0, removed = false}
+	local node = {value = item, _prev = 0, _next = 0, removed = false}
 
 	self._prev._next = node
 	node._next = self
@@ -34,6 +35,8 @@ function list:push(value)
 	return node
 end
 
+---添加一个节点
+---@param node 节点
 function list:pushnode(node)
 	if not node.removed then return end
 
@@ -51,8 +54,8 @@ function list:pop()
 	return _prev.value
 end
 
-function list:unshift(v)
-	local node = {value = v, _prev = 0, _next = 0, removed = false}
+function list:unshift(item)
+	local node = {value = item, _prev = 0, _next = 0, removed = false}
 
 	self._next._prev = node
 	node._prev = self
@@ -69,28 +72,30 @@ function list:shift()
 	return _next.value
 end
 
-function list:remove(iter)
-	if iter.removed then return end
+---删除
+---@param node 节点
+function list:remove(node)
+	if node.removed then return end
 
-	local _prev = iter._prev
-	local _next = iter._next
+	local _prev = node._prev
+	local _next = node._next
 	_next._prev = _prev
 	_prev._next = _next
-	
+
 	self.length = math.max(0, self.length - 1)
-	iter.removed = true
+	node.removed = true
 end
 
-function list:find(v, iter)
-	iter = iter or self
+function list:find(item, node)
+	node = node or self
 
 	repeat
-		if v == iter.value then
-			return iter
+		if item == node.value then
+			return node
 		else
-			iter = iter._next
-		end		
-	until iter == self
+			node = node._next
+		end
+	until node == self
 
 	return nil
 end
@@ -105,22 +110,22 @@ function list:firstordefault(condition)
 	return nil
 end
 
-function list:findlast(v, iter)
-	iter = iter or self
+function list:findlast(item, node)
+	node = node or self
 
 	repeat
-		if v == iter.value then
-			return iter
+		if item == node.value then
+			return node
 		end
 
-		iter = iter._prev
-	until iter == self
+		node = node._prev
+	until node == self
 
 	return nil
 end
 
-function list:next(iter)
-	local _next = iter._next
+function list:next(node)
+	local _next = node._next
 	if _next ~= self then
 		return _next, _next.value
 	end
@@ -128,8 +133,8 @@ function list:next(iter)
 	return nil
 end
 
-function list:prev(iter)
-	local _prev = iter._prev
+function list:prev(node)
+	local _prev = node._prev
 	if _prev ~= self then
 		return _prev, _prev.value
 	end
@@ -137,32 +142,32 @@ function list:prev(iter)
 	return nil
 end
 
-function list:erase(v)
-	local iter = self:find(v)
+function list:erase(item)
+	local node = self:find(item)
 
-	if iter then
-		self:remove(iter)		
+	if node then
+		self:remove(node)
 	end
 end
 
-function list:insert(v, iter)	
-	if not iter then
-		return self:push(v)
+function list:insert(item, node)
+	if not node then
+		return self:push(item)
 	end
 
-	local node = {value = v, _next = 0, _prev = 0, removed = false}
+	local tempNode = {value = item, _next = 0, _prev = 0, removed = false}
 
-	if iter._next then
-		iter._next._prev = node
-		node._next = iter._next
+	if node._next then
+		node._next._prev = tempNode
+		tempNode._next = node._next
 	else
-		self.last = node
+		self.last = tempNode
 	end
 
-	node._prev = iter
-	iter._next = node
+	tempNode._prev = node
+	node._next = tempNode
 	self.length = self.length + 1
-	return node
+	return tempNode
 end
 
 function list:head()
@@ -190,3 +195,4 @@ rilist = function(_list) return list.prev, _list, _list end
 
 setmetatable(list, {__call = list.new})
 return list
+

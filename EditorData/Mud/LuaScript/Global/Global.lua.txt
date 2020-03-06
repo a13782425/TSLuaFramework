@@ -1,7 +1,8 @@
 
+
 -- Manager
-UpdateManager = require 'Manager.UpdateManager'
-TimerManager = require 'Manager.TimerManager'
+UpdateManager = require 'Update.UpdateManager'
+TimerManager = require 'Update.TimerManager'
 ResourcesManager = require 'Manager.ResourcesManager'
 UIManager = require 'Manager.UIManager'
 CameraManager = require 'Manager.CameraManager'

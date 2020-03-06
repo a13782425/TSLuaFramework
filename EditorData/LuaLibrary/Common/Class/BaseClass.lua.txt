@@ -22,7 +22,8 @@ local Keywords = {
     ClassName = 1,
     base = 1,
     _ctor = 1,
-    _dtor = 1
+    _dtor = 1,
+    _setMetaFunc = 1
 }
 ---所有类的基类
 local Object = {
@@ -33,10 +34,18 @@ local Object = {
     __init = false,
     __delete = false,
     ---构造函数
-    _dtor = function()
+    _dtor = function(self)
     end,
     ---析构函数
-    _ctor = function()
+    _ctor = function(self)
+    end,
+    ---设置原方法
+    _setMetaFunc = function(self, funcName, func)
+        if type(func) ~= "function" then
+            error("传入的func参数错误", 2)
+        end
+        local meta = getmetatable(self)
+        meta[funcName] = func
     end
 }
 ---验证默认方法是否存在
@@ -70,6 +79,7 @@ local function __index(table, key)
     end
     local meta = getmetatable(table)
     meta = getmetatable(meta.instance)
+    --先检查是不是属性
     local value = meta.__attributes[key]
     if value ~= nil then
         if value.getter == nil then
@@ -77,10 +87,19 @@ local function __index(table, key)
         end
         return value.getter(meta.instance)
     end
+    --再检查是不是字段
     value = meta.__fields[key]
     if value ~= nil then
         return value
     end
+    --再检查是不是事件
+    value = meta.__events[key]
+    if value ~= nil then
+        local c = getmetatable(value)
+        Logger.LogError(type(c) .. "  cccc")
+        return value
+    end
+    --最后检查是不是方法
     local originName = table.__originName
     --如果使用self调用
     if originName == meta.instance.__originName then
@@ -119,6 +138,8 @@ local function __newindex(table, key, value)
         if newType == "table" then
             if value.setter == nil and value.gettter == nil then
                 newType = "field"
+            elseif value.addEvent ~= nil or value.removeEvent ~= nil then
+                error("事件不允许修改,请调用addEvent或者removeEvent进行操作", 2)
             else
                 newType = "prop"
             end
@@ -167,6 +188,24 @@ local function __newindex(table, key, value)
     end
 end
 
+---设置一个类事件的元表
+local function setEventMetaTable(meta)
+    local tempMeta = {
+        instance = meta.instance,
+        __mode = "kv",
+        __index = function(t, k)
+            local ta = getmetatable(t)
+            Logger.LogError(ta.instance.ClassName .. k)
+        end,
+        __newindex = function(t, k, v)
+            Logger.Log(k)
+        end
+    }
+    for key, value in pairs(meta.__events) do
+        setmetatable(meta.__events[key], tempMeta)
+    end
+end
+
 ---解析一个类
 local function parseClass(class)
     local cls = class
@@ -177,9 +216,11 @@ local function parseClass(class)
         cls = cls.base
     end
     -- 所有字段
-    local fields = {} --Map<类名,Map<名称,Value>>
+    local fields = {} --只存最后一个<名称,Value>
     -- 所有属性
-    local attributes = {} -- Map<类名, Map<属名,value> >
+    local attributes = {} --只存最后一个<名称,Value>
+    -- 所有事件
+    local events = {} --只存最后一个<名称,Value>
     -- 所有方法
     local functions = {} -- Map<类名, Map<方法名,func> >
     --保存最后实现的那些方法. 实现多态.
@@ -190,8 +231,6 @@ local function parseClass(class)
         _cls = _clsListTemp[i]
         local className = _cls.ClassName
         functions[className] = {}
-        fields[className] = {}
-        attributes[className] = {}
         --找出方法,保存到方法列表中
         for k, v in pairs(_cls) do
             local typeName = type(v)
@@ -203,8 +242,13 @@ local function parseClass(class)
                 end
             elseif typeName == "table" then
                 if v.setter ~= nil or v.getter ~= nil then
+                    --这个表是属性
                     attributes[k] = v
+                elseif v.addEvent ~= nil or v.removeEvent ~= nil then
+                    --这个表是事件
+                    events[k] = v
                 else
+                    --这是一个正常表
                     if Keywords[k] == nil then
                         fields[k] = v
                     end
@@ -216,26 +260,27 @@ local function parseClass(class)
             end
         end
     end
-    return fields, attributes, functions
+    return fields, attributes, events, functions
 end
 
 --创建一个心类
 local function newClass(class, ...)
-    --Logger.Log("newClass")
     --obj是一个对象
     checkDefaultFunc(class)
     local obj = {}
     local meta = {instance = obj, class = class}
     meta.__mode = "kv"
     obj.__originName = class.ClassName
-    local fields, attributes, functions = parseClass(class)
+    local fields, attributes, events, functions = parseClass(class)
     meta.__fields = fields
     meta.__attributes = attributes
+    meta.__events = events
     meta.__functions = functions
     meta.__fields.ClassName = class.ClassName
     meta.__fields.ClassType = ClassType.instance
     fields = nil
     attributes = nil
+    events = nil
     functions = nil
     local finishClass = {}
     finishClass[class.ClassName] = 1
@@ -252,6 +297,8 @@ local function newClass(class, ...)
             createBase(o.base, c.base)
         end
     end
+    Logger.LogError("ceshi " .. class.ClassName)
+    setEventMetaTable(meta)
     createBase(obj, class)
     finishClass = nil
     setmetatable(obj, meta)

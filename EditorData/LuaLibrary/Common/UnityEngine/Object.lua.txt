@@ -26,8 +26,8 @@ function GetTypeName(obj)
 		if obj.GetTypeName ~= nil then
 			return obj:GetTypeName()
 		end
-	elseif (obj ~= {} and obj ~= nil and obj._name ~= nil) then
-        return obj._name
+	elseif (obj ~= {} and obj ~= nil and obj.ClassName ~= nil) then
+        return obj.ClassName
     end
     return "Unknown"
 end

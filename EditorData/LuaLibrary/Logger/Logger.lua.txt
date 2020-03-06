@@ -8,7 +8,11 @@ local csLogger = CS.TSLuaFramework.UnityLogger("Lua")
 local function Log(msg)
     local str = msg
     if (type(msg) == "table") then
-        str = serpent.block(msg)
+        if rawget(msg, "__tostring") then
+            str = tostring(msg)
+        else
+            str = serpent.block(msg)
+        end
     elseif msg == nil then
         str = "null"
     end
@@ -22,7 +26,11 @@ end
 local function LogError(msg)
     local str = msg
     if (type(msg) == "table") then
-        str = serpent.block(msg)
+        if rawget(msg, "__tostring") then
+            str = tostring(msg)
+        else
+            str = serpent.block(msg)
+        end
     elseif msg == nil then
         str = "null"
     end
@@ -33,6 +41,20 @@ local function LogError(msg)
     end
 end
 
+local function LogException(msg)
+    local str = msg
+    if (type(msg) == "table") then
+        if rawget(msg, "__tostring") then
+            str = tostring(msg)
+        else
+            str = serpent.block(msg)
+        end
+    elseif msg == nil then
+        str = "null"
+    end
+    error(str, 2)
+end
+
 -- 重定向event错误处理函数
 event_err_handle = function(msg)
     LogError(msg)
@@ -40,5 +62,6 @@ end
 
 Logger.Log = Log
 Logger.LogError = LogError
+Logger.LogException = LogException
 
 return Logger

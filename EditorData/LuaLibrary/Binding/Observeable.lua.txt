@@ -1,0 +1,16 @@
+local Observeable = BaseClass("Observeable")
+
+Observeable.SourceData = {
+    getter = function(self)
+        return self._sourceData
+    end,
+    setter = function(self, value)
+        self._sourceData = value
+    end
+}
+
+function Observeable:Bind(field)
+    Logger.LogError(field.Name)
+end
+
+return Observeable

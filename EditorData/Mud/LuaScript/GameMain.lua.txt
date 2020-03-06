@@ -60,7 +60,7 @@ local function Start()
     ResourcesManager:GetInstance():Startup()
     UIManager:GetInstance():Startup();
     UIManager:GetInstance():ShowPanel(UIConfig.Panel.TestPanel)
-    UIManager:GetInstance():ShowPanel(UIConfig.Panel.TestPanel1)
+    --UIManager:GetInstance():ShowPanel(UIConfig.Panel.TestPanel1)
 end
 
 local function OnApplicationQuit()

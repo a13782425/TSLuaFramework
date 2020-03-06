@@ -77,7 +77,7 @@ end
 
 ---实例化一个View
 local function CreateView(self, uiconfig)
-    local view = UIBaseView.CreateView(uiconfig, self:GetLayerTran(uiconfig.Layer))
+    local view = UIView.CreateView(uiconfig, self:GetLayerTran(uiconfig.Layer))
     --显示界面
     self.Panels:push(view)
     self:ShowPanel(uiconfig)

@@ -203,7 +203,7 @@ local function InnerGetTimer(self, delay, func, obj, one_shot, use_frame, unscal
 			timer:Init(delay, func, obj, one_shot, use_frame, unscaled)
 		end
 	else
-		timer = Timer.New(delay, func, obj, one_shot, use_frame, unscaled)
+		timer = Timer(delay, func, obj, one_shot, use_frame, unscaled)
 	end
 	return timer
 end

@@ -225,6 +225,148 @@ namespace XLua
             return 1;
 		}
     
+		public void __RegisterUnityEngineEventSystemsEventTriggerType(RealStatePtr L)
+        {
+		    Utils.BeginObjectRegister(typeof(UnityEngine.EventSystems.EventTriggerType), L, this, 0, 0, 0, 0);
+			Utils.EndObjectRegister(typeof(UnityEngine.EventSystems.EventTriggerType), L, this, null, null, null, null, null);
+			
+			Utils.BeginClassRegister(typeof(UnityEngine.EventSystems.EventTriggerType), L, null, 18, 0, 0);
+
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "PointerEnter", UnityEngine.EventSystems.EventTriggerType.PointerEnter);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "PointerExit", UnityEngine.EventSystems.EventTriggerType.PointerExit);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "PointerDown", UnityEngine.EventSystems.EventTriggerType.PointerDown);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "PointerUp", UnityEngine.EventSystems.EventTriggerType.PointerUp);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "PointerClick", UnityEngine.EventSystems.EventTriggerType.PointerClick);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "Drag", UnityEngine.EventSystems.EventTriggerType.Drag);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "Drop", UnityEngine.EventSystems.EventTriggerType.Drop);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "Scroll", UnityEngine.EventSystems.EventTriggerType.Scroll);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "UpdateSelected", UnityEngine.EventSystems.EventTriggerType.UpdateSelected);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "Select", UnityEngine.EventSystems.EventTriggerType.Select);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "Deselect", UnityEngine.EventSystems.EventTriggerType.Deselect);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "Move", UnityEngine.EventSystems.EventTriggerType.Move);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "InitializePotentialDrag", UnityEngine.EventSystems.EventTriggerType.InitializePotentialDrag);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "BeginDrag", UnityEngine.EventSystems.EventTriggerType.BeginDrag);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "EndDrag", UnityEngine.EventSystems.EventTriggerType.EndDrag);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "Submit", UnityEngine.EventSystems.EventTriggerType.Submit);
+            
+            Utils.RegisterObject(L, this, Utils.CLS_IDX, "Cancel", UnityEngine.EventSystems.EventTriggerType.Cancel);
+            
+
+			Utils.RegisterFunc(L, Utils.CLS_IDX, "__CastFrom", __CastFromUnityEngineEventSystemsEventTriggerType);
+            
+            Utils.EndClassRegister(typeof(UnityEngine.EventSystems.EventTriggerType), L, this);
+        }
+		
+        int __CastFromUnityEngineEventSystemsEventTriggerType(RealStatePtr L, int __gen_top)
+		{
+			LuaTypes lua_type = LuaAPI.lua_type(L, 1);
+            if (lua_type == LuaTypes.LUA_TNUMBER)
+            {
+                PushUnityEngineEventSystemsEventTriggerType(L, (UnityEngine.EventSystems.EventTriggerType)LuaAPI.xlua_tointeger(L, 1));
+            }
+			
+            else if(lua_type == LuaTypes.LUA_TSTRING)
+            {
+
+			    if (LuaAPI.xlua_is_eq_str(L, 1, "PointerEnter"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.PointerEnter);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "PointerExit"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.PointerExit);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "PointerDown"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.PointerDown);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "PointerUp"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.PointerUp);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "PointerClick"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.PointerClick);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Drag"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.Drag);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Drop"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.Drop);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Scroll"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.Scroll);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "UpdateSelected"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.UpdateSelected);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Select"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.Select);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Deselect"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.Deselect);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Move"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.Move);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "InitializePotentialDrag"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.InitializePotentialDrag);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "BeginDrag"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.BeginDrag);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "EndDrag"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.EndDrag);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Submit"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.Submit);
+                }
+				else if (LuaAPI.xlua_is_eq_str(L, 1, "Cancel"))
+                {
+                    PushUnityEngineEventSystemsEventTriggerType(L, UnityEngine.EventSystems.EventTriggerType.Cancel);
+                }
+				else
+                {
+                    return LuaAPI.luaL_error(L, "invalid string for UnityEngine.EventSystems.EventTriggerType!");
+                }
+
+            }
+			
+            else
+            {
+                return LuaAPI.luaL_error(L, "invalid lua type for UnityEngine.EventSystems.EventTriggerType! Expect number or string, got + " + lua_type);
+            }
+
+            return 1;
+		}
+    
 		public void __RegisterUnityEngineTouchPhase(RealStatePtr L)
         {
 		    Utils.BeginObjectRegister(typeof(UnityEngine.TouchPhase), L, this, 0, 0, 0, 0);

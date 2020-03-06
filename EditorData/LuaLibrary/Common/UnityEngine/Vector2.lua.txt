@@ -27,11 +27,11 @@ Vector2.__index = function(t, k)
 end
 
 Vector2.__call = function(t, x, y)
-    return setmetatable({x = x or 0, y = y or 0}, Vector2)
+    return setmetatable({x = x or 0, y = y or 0, ClassName = "Vector2"}, Vector2)
 end
 
 function Vector2.New(x, y)
-    return setmetatable({x = x or 0, y = y or 0}, Vector2)
+    return setmetatable({x = x or 0, y = y or 0, ClassName = "Vector2"}, Vector2)
 end
 
 function Vector2:Set(x, y)
@@ -238,7 +238,7 @@ end
 function Vector2:Div(d)
     if self == nil then
         Logger.LogError("请使用实例调用")
-        return Vector2.New(0,0)
+        return Vector2.New(0, 0)
     end
     self.x = self.x / d
     self.y = self.y / d

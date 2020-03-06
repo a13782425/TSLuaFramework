@@ -1,0 +1,113 @@
+local Set = BaseClass("Set")
+
+Set.Count = {
+    getter = function(self)
+        return table.length(self._datas)
+    end
+}
+
+local function _ctor(self)
+    self._datas = {}
+end
+local function Add(self, item)
+    table.insert(self._datas, item)
+end
+
+local function Find(self, predicate)
+    if (predicate == nil or type(predicate) ~= "function") then
+        print("predicate is invalid!")
+        return
+    end
+    local count = self.Count
+    for i = 1, count do
+        if predicate(self._datas[i]) then
+            return self._datas[i]
+        end
+    end
+    return nil
+end
+
+local function ForEach(self, action)
+    if (action == nil or type(action) ~= "function") then
+        print("action is invalid!")
+        return
+    end
+    local count = self.Count
+    for i = 1, count do
+        action(self._datas[i])
+    end
+end
+
+local function IndexOf(self, item)
+    local count = self.Count
+    for i = 1, count do
+        if self[i] == item then
+            return i
+        end
+    end
+    return 0
+end
+
+local function LastIndexOf(self, item)
+    local count = self.Count
+    for i = count, 1, -1 do
+        if self[i] == item then
+            return i
+        end
+    end
+    return 0
+end
+
+local function Insert(self, index, item)
+    table.insert(self._datas, index, item)
+end
+
+local function Remove(self, item)
+    local idx = self:LastIndexOf(item)
+    if (idx > 0) then
+        table.remove(self._datas, idx)
+    end
+end
+
+local function RemoveAt(self, index)
+    table.remove(self._datas, index)
+end
+
+local function _dtor(self)
+    self._datas = nil
+end
+
+Set._ctor = _ctor
+Set._dtor = _dtor
+Set.Add = Add
+Set.Remove = Remove
+Set.RemoveAt = RemoveAt
+Set.Insert = Insert
+Set.LastIndexOf = LastIndexOf
+Set.IndexOf = IndexOf
+Set.Find = Find
+Set.ForEach = ForEach
+function iset(set)
+    if set.ClassType ~= ClassType.instance then
+        error("只能迭代Set的实例", 2)
+    end
+    local nCount = set.Count
+    local index = 0
+    return function()
+        print(string.format("call close func. %s", index))
+        index = index + 1
+        if index <= nCount then
+            if nil ~= set._datas[index] then
+                return index, array[index]
+            else
+                while index <= nCount do
+                    index = index + 1
+                    if nil ~= set._datas[index] then
+                        return index, set._datas[index]
+                    end
+                end
+            end
+        end
+    end
+end
+return Set

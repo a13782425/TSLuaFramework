@@ -37,6 +37,7 @@ namespace XLua
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.KeyCode>(translator.PushUnityEngineKeyCode, translator.Get, translator.UpdateUnityEngineKeyCode);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.CameraClearFlags>(translator.PushUnityEngineCameraClearFlags, translator.Get, translator.UpdateUnityEngineCameraClearFlags);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.HideFlags>(translator.PushUnityEngineHideFlags, translator.Get, translator.UpdateUnityEngineHideFlags);
+				translator.RegisterPushAndGetAndUpdate<UnityEngine.EventSystems.EventTriggerType>(translator.PushUnityEngineEventSystemsEventTriggerType, translator.Get, translator.UpdateUnityEngineEventSystemsEventTriggerType);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.TouchPhase>(translator.PushUnityEngineTouchPhase, translator.Get, translator.UpdateUnityEngineTouchPhase);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.RenderMode>(translator.PushUnityEngineRenderMode, translator.Get, translator.UpdateUnityEngineRenderMode);
 				translator.RegisterPushAndGetAndUpdate<UnityEngine.UI.CanvasScaler.ScaleMode>(translator.PushUnityEngineUICanvasScalerScaleMode, translator.Get, translator.UpdateUnityEngineUICanvasScalerScaleMode);
@@ -829,6 +830,90 @@ namespace XLua
             }
         }
         
+        int UnityEngineEventSystemsEventTriggerType_TypeID = -1;
+		int UnityEngineEventSystemsEventTriggerType_EnumRef = -1;
+        
+        public void PushUnityEngineEventSystemsEventTriggerType(RealStatePtr L, UnityEngine.EventSystems.EventTriggerType val)
+        {
+            if (UnityEngineEventSystemsEventTriggerType_TypeID == -1)
+            {
+			    bool is_first;
+                UnityEngineEventSystemsEventTriggerType_TypeID = getTypeId(L, typeof(UnityEngine.EventSystems.EventTriggerType), out is_first);
+				
+				if (UnityEngineEventSystemsEventTriggerType_EnumRef == -1)
+				{
+				    Utils.LoadCSTable(L, typeof(UnityEngine.EventSystems.EventTriggerType));
+				    UnityEngineEventSystemsEventTriggerType_EnumRef = LuaAPI.luaL_ref(L, LuaIndexes.LUA_REGISTRYINDEX);
+				}
+				
+            }
+			
+			if (LuaAPI.xlua_tryget_cachedud(L, (int)val, UnityEngineEventSystemsEventTriggerType_EnumRef) == 1)
+            {
+			    return;
+			}
+			
+            IntPtr buff = LuaAPI.xlua_pushstruct(L, 4, UnityEngineEventSystemsEventTriggerType_TypeID);
+            if (!CopyByValue.Pack(buff, 0, (int)val))
+            {
+                throw new Exception("pack fail fail for UnityEngine.EventSystems.EventTriggerType ,value="+val);
+            }
+			
+			LuaAPI.lua_getref(L, UnityEngineEventSystemsEventTriggerType_EnumRef);
+			LuaAPI.lua_pushvalue(L, -2);
+			LuaAPI.xlua_rawseti(L, -2, (int)val);
+			LuaAPI.lua_pop(L, 1);
+			
+        }
+		
+        public void Get(RealStatePtr L, int index, out UnityEngine.EventSystems.EventTriggerType val)
+        {
+		    LuaTypes type = LuaAPI.lua_type(L, index);
+            if (type == LuaTypes.LUA_TUSERDATA )
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityEngineEventSystemsEventTriggerType_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityEngine.EventSystems.EventTriggerType");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+				int e;
+                if (!CopyByValue.UnPack(buff, 0, out e))
+                {
+                    throw new Exception("unpack fail for UnityEngine.EventSystems.EventTriggerType");
+                }
+				val = (UnityEngine.EventSystems.EventTriggerType)e;
+                
+            }
+            else
+            {
+                val = (UnityEngine.EventSystems.EventTriggerType)objectCasters.GetCaster(typeof(UnityEngine.EventSystems.EventTriggerType))(L, index, null);
+            }
+        }
+		
+        public void UpdateUnityEngineEventSystemsEventTriggerType(RealStatePtr L, int index, UnityEngine.EventSystems.EventTriggerType val)
+        {
+		    
+            if (LuaAPI.lua_type(L, index) == LuaTypes.LUA_TUSERDATA)
+            {
+			    if (LuaAPI.xlua_gettypeid(L, index) != UnityEngineEventSystemsEventTriggerType_TypeID)
+				{
+				    throw new Exception("invalid userdata for UnityEngine.EventSystems.EventTriggerType");
+				}
+				
+                IntPtr buff = LuaAPI.lua_touserdata(L, index);
+                if (!CopyByValue.Pack(buff, 0,  (int)val))
+                {
+                    throw new Exception("pack fail for UnityEngine.EventSystems.EventTriggerType ,value="+val);
+                }
+            }
+			
+            else
+            {
+                throw new Exception("try to update a data with lua type:" + LuaAPI.lua_type(L, index));
+            }
+        }
+        
         int UnityEngineTouchPhase_TypeID = -1;
 		int UnityEngineTouchPhase_EnumRef = -1;
         
@@ -1242,6 +1327,12 @@ namespace XLua
 				translator.PushUnityEngineHideFlags(L, array[index]);
 				return true;
 			}
+			else if (type == typeof(UnityEngine.EventSystems.EventTriggerType[]))
+			{
+			    UnityEngine.EventSystems.EventTriggerType[] array = obj as UnityEngine.EventSystems.EventTriggerType[];
+				translator.PushUnityEngineEventSystemsEventTriggerType(L, array[index]);
+				return true;
+			}
 			else if (type == typeof(UnityEngine.TouchPhase[]))
 			{
 			    UnityEngine.TouchPhase[] array = obj as UnityEngine.TouchPhase[];
@@ -1335,6 +1426,12 @@ namespace XLua
 			else if (type == typeof(UnityEngine.HideFlags[]))
 			{
 			    UnityEngine.HideFlags[] array = obj as UnityEngine.HideFlags[];
+				translator.Get(L, obj_idx, out array[array_idx]);
+				return true;
+			}
+			else if (type == typeof(UnityEngine.EventSystems.EventTriggerType[]))
+			{
+			    UnityEngine.EventSystems.EventTriggerType[] array = obj as UnityEngine.EventSystems.EventTriggerType[];
 				translator.Get(L, obj_idx, out array[array_idx]);
 				return true;
 			}

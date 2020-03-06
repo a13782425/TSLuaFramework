@@ -8,29 +8,31 @@
 -- 4、Ctrl层不依赖View层，但是依赖Model层
 -- 5、任何情况下不要在游戏逻辑代码操作界面刷新---除了打开、关闭界面
 --]]
-local UIBaseView = BaseClass("UIBaseView", UIElement)
+
+---@class 所有视图的基类
+local UIView = BaseClass("UIView", UIElement)
 
 --region 创建UIView
 
-UIBaseView.gameObject = {
+UIView.gameObject = {
     getter = function(self)
         return self._gameObject
     end
 }
 
-UIBaseView.transform = {
+UIView.transform = {
     getter = function(self)
         return self._transform
     end
 }
 
-UIBaseView.rectTransform = {
+UIView.rectTransform = {
     getter = function(self)
         return self._rectTransform
     end
 }
 
-UIBaseView.name = {
+UIView.name = {
     getter = function(self)
         return self.gameObject.name
     end,
@@ -50,7 +52,7 @@ local function CheckInherit(view)
     local cls = view
     local res = false
     while cls ~= nil do
-        if cls.ClassName == "UIBaseView" then
+        if cls.ClassName == "UIView" then
             res = true
             break
         end
@@ -61,7 +63,7 @@ end
 
 local function CreateView(uiconfig, parent)
     if CheckInherit(uiconfig.View) == false then
-        Logger.LogError(uiconfig.View.ClassName .. "不继承自UIBaseView")
+        Logger.LogException(uiconfig.View.ClassName .. "不继承自UIBaseView")
         return
     end
     local view = uiconfig.View()
@@ -72,10 +74,10 @@ local function CreateView(uiconfig, parent)
     return view
 end
 
-function UIBaseView:OnCreate()
+function UIView:OnCreate()
     
 end
 --endregion
-UIBaseView.CreateView = CreateView
+UIView.CreateView = CreateView
 
-return UIBaseView
+return UIView

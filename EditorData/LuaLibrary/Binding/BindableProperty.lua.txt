@@ -9,8 +9,55 @@ BindableProperty.Value = {
         return self._value
     end,
     setter = function(self, value)
-        self._value = value
+        if self._value ~= value then
+            self.Event:ForEach(
+                function(func)
+                    func(self._value, value)
+                end
+            )
+            self._value = value
+        end
     end
 }
+BindableProperty.Name = {
+    getter = function(self)
+        return self._name
+    end
+}
+BindableProperty.Event = {
+    getter = function(self)
+        return self._event
+    end
+}
+BindableProperty.__tostring = function(self)
+    return self.Name .. "的值是:" .. tostring(self.Value)
+end
 
+---订阅
+---@param func 回调方法 参数:先前的值，现在的值
+local function Subscribe(self, func)
+    self.Event:Add(func)
+end
+---取消订阅
+---@param func 回调方法 参数:先前的值，现在的值
+local function Unsubscribe(self, func)
+    self.Event:Remove(func)
+end
+
+---构造函数
+---@param name 变量名
+local function _ctor(self, name)
+    self:_setMetaFunc("__tostring",self.__tostring)
+    self._name = name
+    self._event = Set()
+end
+
+---析构函数
+local function _dtor(self)
+end
+
+BindableProperty._ctor = _ctor
+BindableProperty._dtor = _dtor
+BindableProperty.Subscribe = Subscribe
+BindableProperty.Unsubscribe = Unsubscribe
 return BindableProperty
