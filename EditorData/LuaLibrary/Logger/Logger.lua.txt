@@ -23,6 +23,20 @@ local function Log(msg)
     end
 end
 
+local function LogWarning(msg)
+    local str = msg
+    if (type(msg) == "table") then
+        if rawget(msg, "__tostring") then
+            str = tostring(msg)
+        else
+            str = serpent.block(msg)
+        end
+    elseif msg == nil then
+        str = "null"
+    end
+    csLogger:LogWarning(debug.traceback(str, 2))
+end
+
 local function LogError(msg)
     local str = msg
     if (type(msg) == "table") then
@@ -61,6 +75,7 @@ event_err_handle = function(msg)
 end
 
 Logger.Log = Log
+Logger.LogWarning = LogWarning
 Logger.LogError = LogError
 Logger.LogException = LogException
 

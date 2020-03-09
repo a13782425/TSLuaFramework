@@ -77,13 +77,22 @@ UIElement.active = {
         end
     end
 }
---类对表的错误
-UIElement.Test = {}
 
 UIElement.onPointerClick = {
-    addEvent = function(self)
-        Logger.Log('...'..tostring(self))
+    addEvent = function(self, func)
+        if self.UIEvent == nil then
+            self.UIEvent = CS.TSLuaFramework.Tool.UIEvent(self.gameObject)
+        end
+        self.UIEvent:AddPointerEvent(EventTriggerType.PointerClick, func)
+    end,
+    removeEvent = function(self,func)
+        if self.UIEvent == nil then
+            self.UIEvent = CS.TSLuaFramework.Tool.UIEvent(self.gameObject)
+        end
+        Logger.LogError("ccc")
+        self.UIEvent:RemovePointerEvent(EventTriggerType.PointerClick, func)
     end
+
 }
 --endregion 属性结束
 

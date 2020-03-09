@@ -6,16 +6,17 @@ function TestPanelView:OnCreate()
     self.BindContext = Observeable()
     self.ViewModel = UIConfig.Panel.TestPanel.ViewModel(self)
     self.BindContext.SourceData = self.ViewModel
-    self.Test.C = "cbbbb"
     local test = UIElement(self.raw_img_aa)
     -- test:onPointerClick(
     --     function(data)
     --         print("onPointerClick")
     --     end
     -- )
-    print(test.Test.C)
-    test.onPointerClick.addEvent = nil
-    print("onPointerClick")
+    local function Test(data)
+        print("onPointerClick")
+    end
+    test.onPointerClick:addEvent(Test);
+    test.onPointerClick:removeEvent(Test)
     --self.BindContext:Bind(self.ViewModel.aa_color)
     --self.BindContext = UIConfig.Panel.TestPanel.ViewModel(self)
     -- self.BindContext.aa_color:Subscribe(

@@ -79,6 +79,11 @@ local function __index(table, key)
     end
     local meta = getmetatable(table)
     meta = getmetatable(meta.instance)
+    if key == "addEvent" or key == "removeEvent" then
+        if meta.__eventName ~=nil then
+            return meta.__functions.__lastFuncs[meta.__eventName .. "__" .. key]
+        end
+    end
     --先检查是不是属性
     local value = meta.__attributes[key]
     if value ~= nil then
@@ -87,7 +92,6 @@ local function __index(table, key)
         end
         return value.getter(meta.instance)
     end
-    --再检查是不是字段
     value = meta.__fields[key]
     if value ~= nil then
         return value
@@ -95,9 +99,9 @@ local function __index(table, key)
     --再检查是不是事件
     value = meta.__events[key]
     if value ~= nil then
-        local c = getmetatable(value)
-        Logger.LogError(type(c) .. "  cccc")
-        return value
+        meta.__eventName = key
+        return meta.instance
+        --return value
     end
     --最后检查是不是方法
     local originName = table.__originName
@@ -190,19 +194,8 @@ end
 
 ---设置一个类事件的元表
 local function setEventMetaTable(meta)
-    local tempMeta = {
-        instance = meta.instance,
-        __mode = "kv",
-        __index = function(t, k)
-            local ta = getmetatable(t)
-            Logger.LogError(ta.instance.ClassName .. k)
-        end,
-        __newindex = function(t, k, v)
-            Logger.Log(k)
-        end
-    }
     for key, value in pairs(meta.__events) do
-        setmetatable(meta.__events[key], tempMeta)
+        setmetatable(meta.__events[key], meta)
     end
 end
 
@@ -241,16 +234,19 @@ local function parseClass(class)
                     functions.__lastFuncs[k] = v
                 end
             elseif typeName == "table" then
-                if v.setter ~= nil or v.getter ~= nil then
+                local copy = DeepCopy(v)
+                if copy.setter ~= nil or copy.getter ~= nil then
                     --这个表是属性
-                    attributes[k] = v
-                elseif v.addEvent ~= nil or v.removeEvent ~= nil then
+                    attributes[k] = copy
+                elseif copy.addEvent ~= nil or copy.removeEvent ~= nil then
                     --这个表是事件
-                    events[k] = v
+                    events[k] = copy
+                    functions.__lastFuncs[k .. "__addEvent"] = copy.addEvent
+                    functions.__lastFuncs[k .. "__removeEvent"] = copy.removeEvent
                 else
                     --这是一个正常表
                     if Keywords[k] == nil then
-                        fields[k] = v
+                        fields[k] = copy
                     end
                 end
             else
@@ -297,7 +293,6 @@ local function newClass(class, ...)
             createBase(o.base, c.base)
         end
     end
-    Logger.LogError("ceshi " .. class.ClassName)
     setEventMetaTable(meta)
     createBase(obj, class)
     finishClass = nil

@@ -55,8 +55,8 @@ local function Start()
 
     -- 模块启动
     CameraManager:GetInstance():Startup()
-    UpdateManager:GetInstance():Startup()
-    TimerManager:GetInstance():Startup()
+    -- UpdateManager:GetInstance():Startup()
+    -- TimerManager:GetInstance():Startup()
     ResourcesManager:GetInstance():Startup()
     UIManager:GetInstance():Startup();
     UIManager:GetInstance():ShowPanel(UIConfig.Panel.TestPanel)
@@ -68,8 +68,8 @@ local function OnApplicationQuit()
     --释放模块
     UIManager:GetInstance():Dispose();
     ResourcesManager:GetInstance():Dispose()
-    TimerManager:GetInstance():Dispose()
-    UpdateManager:GetInstance():Dispose()
+    -- TimerManager:GetInstance():Dispose()
+    -- UpdateManager:GetInstance():Dispose()
     CameraManager:GetInstance():Dispose()
 end
 
