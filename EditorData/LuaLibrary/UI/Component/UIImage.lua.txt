@@ -1,6 +1,8 @@
-local UIImage = BaseClass("UIImage",UIElement)
+local UIImage = BaseClass("UIImage", UIComponent)
 
-
-
+function UIImage:ctor(uiview, unity_object)
+    self.base.ctor(self, uiview, unity_object)
+    Logger.LogError(self.name)
+end
 
 return UIImage

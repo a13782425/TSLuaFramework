@@ -40,12 +40,12 @@ local function RemoveUpdate(self)
 end
 
 -- 构造函数
-local function __init(self)
+local function _ctro(self)
 	self:EnableUpdate(true)
 end
 
 -- 析构函数
-local function __delete(self)
+local function _dtor(self)
 	self:EnableUpdate(false)
 end
 
@@ -57,8 +57,8 @@ local function EnableUpdate(self, enable)
 	end
 end
 
-Updatable.__init = __init
-Updatable.__delete = __delete
+Updatable._ctro = _ctro
+Updatable._dtor = _dtor
 Updatable.EnableUpdate = EnableUpdate
 
 return Updatable

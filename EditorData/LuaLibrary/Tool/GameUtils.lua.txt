@@ -66,15 +66,24 @@ end
 -- 	return _copy(object)
 -- end
 
+function CreateLuaUI(uiview, unity_object)
+    local unity_name = GetTypeName(unity_object)
+    if unity_name == "Image" then
+        return UIImage(uiview, unity_object)
+    end
+    Logger.LogError("UI组件:" .. unity_name .. "没有对应的LuaUI")
+    return nil
+end
+
 ---深拷贝不拷贝meta
 function DeepCopy(originTable)
     local copy
     if type(originTable) == "table" then
+        --setmetatable(copy, DeepCopy(getmetatable(originTable)))
         copy = {}
         for orig_key, orig_value in next, originTable, nil do
             copy[DeepCopy(orig_key)] = DeepCopy(orig_value)
         end
-        --setmetatable(copy, DeepCopy(getmetatable(originTable)))
     else
         copy = originTable
     end

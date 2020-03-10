@@ -1,0 +1,20 @@
+local UIItem = BaseClass("UIItem", UIView)
+
+---当前Item属于哪个界面
+UIItem.BelongView = {
+    getter = function(self)
+        return self._belongView
+    end,
+    setter = function(self, value)
+        self._belongView = value
+    end
+}
+
+function UIItem:OnDestroy()
+    if self.BelongView ~= nil then
+        self.BelongView:RemoveElement(self)
+    end
+    self.base:OnDestroy()
+end
+
+return UIItem

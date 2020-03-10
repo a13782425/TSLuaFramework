@@ -79,9 +79,13 @@ local function __index(table, key)
     end
     local meta = getmetatable(table)
     meta = getmetatable(meta.instance)
+
+    --如果当前访问的为事件关键字则先查找是否有对应的事件方法
     if key == "addEvent" or key == "removeEvent" then
-        if meta.__eventName ~=nil then
-            return meta.__functions.__lastFuncs[meta.__eventName .. "__" .. key]
+        if meta.__eventName ~= nil then
+            local eventName = meta.__eventName
+            meta.__eventName = nil
+            return meta.__functions.__eventFuncs[eventName .. "__" .. key]
         end
     end
     --先检查是不是属性
@@ -100,8 +104,8 @@ local function __index(table, key)
     value = meta.__events[key]
     if value ~= nil then
         meta.__eventName = key
+        --如果发现是事件,保存当前查找的事件名,并返回类
         return meta.instance
-        --return value
     end
     --最后检查是不是方法
     local originName = table.__originName
@@ -218,6 +222,8 @@ local function parseClass(class)
     local functions = {} -- Map<类名, Map<方法名,func> >
     --保存最后实现的那些方法. 实现多态.
     functions.__lastFuncs = {}
+    --保存事件方法
+    functions.__eventFuncs = {} -- key = 事件名__addEvent,Value 方法
     --先从上往下依次调用类链中的所有方法.
     local _cls = nil
     for i = #_clsListTemp, 1, -1 do
@@ -241,8 +247,8 @@ local function parseClass(class)
                 elseif copy.addEvent ~= nil or copy.removeEvent ~= nil then
                     --这个表是事件
                     events[k] = copy
-                    functions.__lastFuncs[k .. "__addEvent"] = copy.addEvent
-                    functions.__lastFuncs[k .. "__removeEvent"] = copy.removeEvent
+                    functions.__eventFuncs[k .. "__addEvent"] = copy.addEvent
+                    functions.__eventFuncs[k .. "__removeEvent"] = copy.removeEvent
                 else
                     --这是一个正常表
                     if Keywords[k] == nil then
@@ -299,13 +305,32 @@ local function newClass(class, ...)
     setmetatable(obj, meta)
     meta.__index = __index
     meta.__newindex = __newindex
-    create = function(c, ...)
-        if c.base then
-            create(c.base, ...)
+    local len = select("#", ...)
+    if len == 0 then
+        -- 调用无参构造函数
+        -- 无参构造函数是递归调用的
+        create = function(c, ...)
+            if c.base then
+                create(c.base)
+            end
+            c._ctor(obj)
         end
-        c._ctor(obj, ...)
+        create(obj)
+    else
+        --有参构造函数只会调用自己,父亲的有参构造函数需要self.base:ctro调用
+        if obj.ctor == nil then
+            Logger.LogException("类:" .. class.ClassName .. "不存在有参构造函数")
+        end
+        obj:ctor(...)
     end
-    create(obj, ...)
+    -- create = function(c, ...)
+    --     if c.base then
+    --         create(c.base, ...)
+    --     end
+    --     c._ctor(obj, ...)
+    -- end
+    --obj:_ctor(...)
+    -- create(obj, ...)
     obj.__init = true
     return obj
 end

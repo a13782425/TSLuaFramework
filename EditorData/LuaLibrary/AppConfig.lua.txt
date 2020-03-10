@@ -50,9 +50,11 @@ BindingModel = require 'Binding.BindingModel'
 BindableProperty = require 'Binding.BindableProperty'
 --UI
 UIElement = require 'UI.Base.UIElement'
+UIComponent = require 'UI.Base.UIComponent'
 UIView = require 'UI.Base.UIView'
 UIViewConfig = require 'UI.UIViewConfig'
 
+UIImage = require 'UI.Component.UIImage'
 
 -- End Custom Lua
 

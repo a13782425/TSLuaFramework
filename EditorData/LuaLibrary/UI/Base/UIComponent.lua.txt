@@ -14,15 +14,22 @@
 --]]
 local UIComponent = BaseClass("UIComponent", UIElement)
 
-function UIComponent:_ctor(obj)
-    if obj then
-        self.gameObject = obj
-        self.transform = obj.transform
-        self.rectTransform = obj:GetComponent(typeof(RectTransform))
-    else
-        Logger.LogException("obj对象为Null")
+UIComponent.BelongView = {
+    getter = function(self)
+        return self._belongView
     end
+}
 
+UIComponent.Component = {
+    getter = function(self)
+        return self._component
+    end
+}
+
+function UIComponent:ctor(uiview, unity_object)
+    self._belongView = uiview
+    self._component = unity_object
+    UIElement.ctor(self, unity_object.gameObject)
 end
 
 return UIComponent

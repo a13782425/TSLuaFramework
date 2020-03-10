@@ -4,7 +4,7 @@
 
 local BindingModel = BaseClass("BindingModel")
 
-local function _ctor(self, view)
+local function ctor(self, view)
     self.View = view
     self:Initlialize()
 end
@@ -22,7 +22,7 @@ local function Dispose(self)
 end
 
 ---不要重写
-BindingModel._ctor = _ctor
+BindingModel.ctor = ctor
 BindingModel._dtor = _dtor
 BindingModel.Initlialize = Initlialize
 BindingModel.Dispose = Dispose

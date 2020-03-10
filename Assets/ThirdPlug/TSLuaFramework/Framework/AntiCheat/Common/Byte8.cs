@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace TSLuaFramework
 {
+#pragma warning disable 0649
     internal struct Byte8
     {
         public byte b1;

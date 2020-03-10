@@ -13,10 +13,10 @@ function TestPanelView:OnCreate()
     --     end
     -- )
     local function Test(data)
-        print("onPointerClick")
+        test.onPointerClick:removeEvent(Test)
     end
     test.onPointerClick:addEvent(Test);
-    test.onPointerClick:removeEvent(Test)
+    
     --self.BindContext:Bind(self.ViewModel.aa_color)
     --self.BindContext = UIConfig.Panel.TestPanel.ViewModel(self)
     -- self.BindContext.aa_color:Subscribe(

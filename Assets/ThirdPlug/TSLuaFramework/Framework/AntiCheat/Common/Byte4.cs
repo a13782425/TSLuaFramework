@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace TSLuaFramework
 {
+#pragma warning disable 0649
     [Serializable]
     internal struct Byte4
     {

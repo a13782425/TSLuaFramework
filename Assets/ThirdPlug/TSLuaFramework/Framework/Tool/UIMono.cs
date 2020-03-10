@@ -31,6 +31,7 @@ namespace TSLuaFramework.Tool
 
         public void AddPointerEvent(EventTriggerType triggerType, Action<PointerEventData> value)
         {
+            Debug.LogError("AddPointerEvent:" + triggerType.ToString());
             if (_eventDic.ContainsKey(triggerType))
             {
                 _eventDic[triggerType].pointerCallback += value;
@@ -42,6 +43,7 @@ namespace TSLuaFramework.Tool
                 {
                     throw new Exception($"{triggerType}的事件类型没有找到！");
                 }
+                _eventDic.Add(triggerType, uIEventBase);
                 uIEventBase.pointerCallback += value;
             }
         }
@@ -58,6 +60,7 @@ namespace TSLuaFramework.Tool
                 {
                     throw new Exception($"{triggerType}的事件类型没有找到！");
                 }
+                _eventDic.Add(triggerType, uIEventBase);
                 uIEventBase.baseCallback += value;
             }
         }
@@ -74,12 +77,14 @@ namespace TSLuaFramework.Tool
                 {
                     throw new Exception($"{triggerType}的事件类型没有找到！");
                 }
+                _eventDic.Add(triggerType, uIEventBase);
                 uIEventBase.axisCallback += value;
             }
         }
 
         public void RemovePointerEvent(EventTriggerType triggerType, Action<PointerEventData> value)
         {
+            Debug.LogError("RemovePointerEvent:" + triggerType.ToString());
             if (_eventDic.ContainsKey(triggerType))
             {
                 _eventDic[triggerType].pointerCallback -= value;

@@ -8,46 +8,24 @@
 -- 4、Ctrl层不依赖View层，但是依赖Model层
 -- 5、任何情况下不要在游戏逻辑代码操作界面刷新---除了打开、关闭界面
 --]]
-
 ---@class 所有视图的基类
 local UIView = BaseClass("UIView", UIElement)
 
---region 创建UIView
+--region 私有方法开始
 
-UIView.gameObject = {
-    getter = function(self)
-        return self._gameObject
-    end
-}
-
-UIView.transform = {
-    getter = function(self)
-        return self._transform
-    end
-}
-
-UIView.rectTransform = {
-    getter = function(self)
-        return self._rectTransform
-    end
-}
-
-UIView.name = {
-    getter = function(self)
-        return self.gameObject.name
-    end,
-    setter = function(self, value)
-        self.gameObject.name = tostring(value)
-    end
-}
-
+---初始化一个界面
 local function initialize(view, uiconfig, parent)
     view._gameObject = GameObject.Instantiate(uiconfig.PrefabObj, parent)
     view._transform = view.gameObject.transform
     view._rectTransform = view.gameObject:GetComponent(typeof(RectTransform))
 end
 
-local function CheckInherit(view)
+--endregion 私有方法结束
+
+--region 静态方法开始
+
+---检测继承是否正确
+local function checkInherit(view)
     -- body
     local cls = view
     local res = false
@@ -61,23 +39,144 @@ local function CheckInherit(view)
     return res
 end
 
-local function CreateView(uiconfig, parent)
-    if CheckInherit(uiconfig.View) == false then
-        Logger.LogException(uiconfig.View.ClassName .. "不继承自UIBaseView")
+--endregion 静态方法结束
+
+--region 属性开始
+
+---当前界面的元素 Map<位移ID,UIElement>
+UIView._uiElementDic = {}
+
+---绑定上下文
+UIView.BindingContext = {
+    getter = function(self)
+        return self._bindingContext
+    end
+}
+
+--endregion 属性结束
+
+function UIView:_ctor()
+    self._bindingContext = Observeable()
+end
+
+--region 私有虚方法开始(可重写)
+
+---激活时调用函数
+function UIView:Internal_OnEnable()
+    for key, value in pairs(self._uiElementDic) do
+        --处于激活状态才会相应事件
+        if value.active then
+            value:Internal_OnEnable()
+        end
+    end
+    self:OnEnable()
+    self.BindingContext.active = true
+end
+
+---隐藏时调用函数
+function UIView:Internal_OnDisable()
+    self.BindingContext.active = false
+    for key, value in pairs(self._uiElementDic) do
+        --处于激活状态才会相应事件
+        if value.active then
+            value:Internal_OnDisable()
+        end
+    end
+    self:OnDisable()
+end
+
+---释放时调用函数
+function UIView:Internal_OnDestroy()
+    for key, value in pairs(self._uiElementDic) do
+        value:Internal_OnDestroy()
+    end
+    self:OnDestroy()
+    self._uiElementDic = nil
+    self.BindingContext:UnbindAll()
+    self._bindingContext = nil
+end
+
+--endregion 私有虚方法结束
+
+--region 公共虚方法开始(可重写)
+
+---初始化组件 系统自动调用
+function UIView:InitializeElement()
+end
+---UI创建,类似Mono的Start
+function UIView:OnCreate()
+end
+---界面激活时候调用
+function UIView:OnEnable()
+end
+---界面禁用时候调用
+function UIView:OnDisable()
+end
+---销毁的时候调用,类似Mono的OnDestroy
+function UIView:OnDestroy()
+end
+
+--endregion 公共虚方法结束
+
+--region 公共方法开始(不可重写)
+
+---绑定一个Item到View
+---@param uiitem Item实例
+function UIView:BindingItem(uiitem)
+    self._uiElementDic[uiitem.InstanceId] = uiitem
+end
+
+---删除一个Item
+function UIView:RemoveItem(item)
+    if self._uiElementDic[item.InstanceId] ~= nil then
+        table.remove(self._uiElementDic, item.InstanceId)
+    end
+end
+
+---绑定组件到View
+---@param unity_object unity物体
+---@return 绑定后对应的lua对象
+function UIView:BindingElement(unity_object)
+    local element = CreateLuaUI(self, unity_object)
+    if element ~= nil then
+        self._uiElementDic[element.InstanceId] = element
+    end
+end
+
+---添加Item
+---@param itemConfig Item配置
+---@param parent 生成的Item在哪个节点下面<可为空>
+---@return 创建出来的Item对象
+function UIView:AddSubItem(itemConfig, parent)
+    if checkInherit(itemConfig.View) == false then
+        Logger.LogException(itemConfig.View.ClassName .. "不继承自UIView")
         return
     end
-    local view = uiconfig.View()
-    initialize(view, uiconfig, parent)
-    view.ViewName = uiconfig.ViewName
+    local item = UIView.CreateView(itemConfig, parent)
+    item.BelongView = self
+    self:bindingItem(item)
+    return item
+end
+--endregion 公共方法结束
+
+--region 公共静态方法开始
+
+---创建一个界面
+---@param uiConfig 界面配置<包括Panel和Item>
+---@param parent 生成在哪个节点下面<可为空>
+function UIView.CreateView(uiConfig, parent)
+    if checkInherit(uiConfig.View) == false then
+        Logger.LogException(uiConfig.View.ClassName .. "不继承自UIView")
+        return
+    end
+    local view = uiConfig.View()
+    initialize(view, uiConfig, parent)
+    view.ViewName = uiConfig.ViewName
     view:InitializeElement()
     view:OnCreate()
     return view
 end
 
-function UIView:OnCreate()
-    
-end
---endregion
-UIView.CreateView = CreateView
+--endregion 公共静态方法结束
 
 return UIView

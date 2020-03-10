@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using XLua;
 
-
 //配置的详细介绍请看Doc下《XLua的配置.doc》
 public static class XLuaConfig
 {
+#pragma warning disable 0414
     [GenPath]
     private static string GenPath = "Assets/ThirdPlug/TSLuaFramework/GenLuaWrap";
 

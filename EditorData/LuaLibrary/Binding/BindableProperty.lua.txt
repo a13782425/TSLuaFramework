@@ -46,7 +46,7 @@ end
 
 ---构造函数
 ---@param name 变量名
-local function _ctor(self, name)
+local function ctor(self, name)
     self:_setMetaFunc("__tostring",self.__tostring)
     self._name = name
     self._event = Set()
@@ -56,7 +56,7 @@ end
 local function _dtor(self)
 end
 
-BindableProperty._ctor = _ctor
+BindableProperty.ctor = ctor
 BindableProperty._dtor = _dtor
 BindableProperty.Subscribe = Subscribe
 BindableProperty.Unsubscribe = Unsubscribe

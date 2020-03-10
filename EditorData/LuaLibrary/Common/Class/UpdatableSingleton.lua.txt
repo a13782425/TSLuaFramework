@@ -4,12 +4,12 @@
 
 local UpdatableSingleton = BaseClass("UpdatableSingleton", Updatable)
 
-local function __init(self)
+local function _ctor(self)
 	assert(rawget(self._class_type, "Instance") == nil, self._class_type.__cname.." to create UpdatableSingleton twice!")
 	rawset(self._class_type, "Instance", self)
 end
 
-local function __delete(self)
+local function _dtor(self)
 	rawset(self._class_type, "Instance", nil)
 end
 
@@ -31,8 +31,8 @@ local function Delete(self)
 	self.Instance = nil
 end
 
-UpdatableSingleton.__init = __init
-UpdatableSingleton.__delete = __delete
+UpdatableSingleton._ctor = _ctor
+UpdatableSingleton._dtor = _dtor
 UpdatableSingleton.Startup = Startup
 UpdatableSingleton.GetInstance = GetInstance
 UpdatableSingleton.Destory = Destory

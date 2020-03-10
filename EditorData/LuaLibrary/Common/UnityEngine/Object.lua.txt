@@ -18,15 +18,17 @@ function GetTypeName(obj)
     local _type = type(obj)
     if (_type ~= "table" and _type ~= "userdata") then
         return _type
-	elseif _type == "userdata" then
-		local _meta = getmetatable(obj)
+    elseif _type == "userdata" then
+        local _meta = getmetatable(obj)
         if (_meta ~= nil and _meta.__name ~= nil) then
-            return _meta.__name
-		end
-		if obj.GetTypeName ~= nil then
-			return obj:GetTypeName()
-		end
-	elseif (obj ~= {} and obj ~= nil and obj.ClassName ~= nil) then
+            local strs = string.split(_meta.__name, ".")
+            return strs[#strs]
+        --return _meta.__name
+        end
+        if obj.GetTypeName ~= nil then
+            return obj:GetTypeName()
+        end
+    elseif (obj ~= {} and obj ~= nil and obj.ClassName ~= nil) then
         return obj.ClassName
     end
     return "Unknown"
