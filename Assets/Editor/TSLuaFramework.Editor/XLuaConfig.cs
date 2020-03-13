@@ -85,6 +85,8 @@ public static class XLuaConfig
         typeof(UnityEngine.UI.GridLayoutGroup),
         typeof(UnityEngine.UI.ContentSizeFitter),
         typeof(UnityEngine.UI.Slider),
+        typeof(TSLuaFramework.UI.TextPlus),
+        typeof(TSLuaFramework.UI.UIParticle),
 
         //typeof(UnityEngine.EventSystems.EventSystem),
         //typeof(UnityEngine.EventSystems.StandaloneInputModule),
@@ -105,9 +107,12 @@ public static class XLuaConfig
         typeof(TSLuaFramework.Module.AssetBundleModule),
         typeof(TSLuaFramework.Tool.GameTool),
         typeof(TSLuaFramework.Tool.UIEvent),
-        typeof(System.Action<UnityEngine.EventSystems. PointerEventData>),
-        typeof(System.Action<UnityEngine.EventSystems.BaseEventData>),
-        typeof(System.Action<UnityEngine.EventSystems.AxisEventData>),
+        typeof(UnityEngine.EventSystems.PointerEventData),
+        typeof(UnityEngine.EventSystems.BaseEventData),
+        typeof(UnityEngine.EventSystems.AxisEventData),
+        //typeof(System.Action<System.Object,UnityEngine.EventSystems.PointerEventData>),
+        //typeof(System.Action<System.Object,UnityEngine.EventSystems.BaseEventData>),
+        //typeof(System.Action<System.Object,UnityEngine.EventSystems.BaseEventData>),
 
     };
     //C#静态调用Lua的配置（包括事件的原型），仅可以配delegate，interface

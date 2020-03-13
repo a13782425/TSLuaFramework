@@ -1,0 +1,4 @@
+local UIPanel = BaseClass("UIPanel", UIView)
+
+
+return UIPanel

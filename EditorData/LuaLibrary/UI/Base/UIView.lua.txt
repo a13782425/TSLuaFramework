@@ -56,7 +56,7 @@ UIView.BindingContext = {
 --endregion 属性结束
 
 function UIView:_ctor()
-    self._bindingContext = Observeable()
+    self._bindingContext = Observer()
 end
 
 --region 私有虚方法开始(可重写)
@@ -89,6 +89,7 @@ end
 function UIView:Internal_OnDestroy()
     for key, value in pairs(self._uiElementDic) do
         value:Internal_OnDestroy()
+        delete(value)
     end
     self:OnDestroy()
     self._uiElementDic = nil
@@ -140,7 +141,9 @@ function UIView:BindingElement(unity_object)
     local element = CreateLuaUI(self, unity_object)
     if element ~= nil then
         self._uiElementDic[element.InstanceId] = element
+        return element
     end
+    return nil
 end
 
 ---添加Item

@@ -14,6 +14,33 @@ function IsNull(unity_object)
     return false
 end
 
+---检测lua类实例是否是某个类型
+---@param instance lua类实例
+---@param ty 类型|类型名
+---@return true|false
+function IsType(instance, ty)
+    local luaType = type(instance)
+    if luaType ~= "table" then
+        return false
+    end
+    if instance.ClassType ~= nil and instance.ClassType ~= ClassType.instance then
+        Logger.LogError("不是一个lua类实体")
+        return false
+    end
+    local typeName = ty.ClassName
+    local cls = instance
+    while cls do
+        if cls.__originName == typeName then
+            return true
+        end
+        cls = cls.base
+    end
+    return false
+end
+
+---获取一个对象的类型
+---@param obj 一个对象
+---@return 类型名
 function GetTypeName(obj)
     local _type = type(obj)
     if (_type ~= "table" and _type ~= "userdata") then

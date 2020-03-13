@@ -212,6 +212,12 @@ namespace XLua.CSObjectWrap
             translator.DelayWrapLoader(typeof(UnityEngine.UI.Slider), translator.__RegisterUnityEngineUISlider);
         
         
+            translator.DelayWrapLoader(typeof(TSLuaFramework.UI.TextPlus), translator.__RegisterTSLuaFrameworkUITextPlus);
+        
+        
+            translator.DelayWrapLoader(typeof(TSLuaFramework.UI.UIParticle), translator.__RegisterTSLuaFrameworkUIUIParticle);
+        
+        
             translator.DelayWrapLoader(typeof(UnityEngine.PlayerPrefs), translator.__RegisterUnityEnginePlayerPrefs);
         
         
@@ -228,6 +234,15 @@ namespace XLua.CSObjectWrap
         
         
             translator.DelayWrapLoader(typeof(TSLuaFramework.Tool.UIEvent), translator.__RegisterTSLuaFrameworkToolUIEvent);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityEngine.EventSystems.PointerEventData), translator.__RegisterUnityEngineEventSystemsPointerEventData);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityEngine.EventSystems.BaseEventData), translator.__RegisterUnityEngineEventSystemsBaseEventData);
+        
+        
+            translator.DelayWrapLoader(typeof(UnityEngine.EventSystems.AxisEventData), translator.__RegisterUnityEngineEventSystemsAxisEventData);
         
         
             translator.DelayWrapLoader(typeof(System.IO.BinaryWriter), translator.__RegisterSystemIOBinaryWriter);

@@ -1,7 +1,6 @@
 --[[
     绑定数据类型
 ]] --
-
 local BindableProperty = BaseClass("BindableProperty")
 
 BindableProperty.Value = {
@@ -11,8 +10,8 @@ BindableProperty.Value = {
     setter = function(self, value)
         if self._value ~= value then
             self.Event:ForEach(
-                function(func)
-                    func(self._value, value)
+                function(luaAction)
+                    luaAction.Func(luaAction.Object, self._value, value)
                 end
             )
             self._value = value
@@ -35,19 +34,19 @@ end
 
 ---订阅
 ---@param func 回调方法 参数:先前的值，现在的值
-local function Subscribe(self, func)
-    self.Event:Add(func)
+local function Subscribe(self, luaAction)
+    self.Event:Add(luaAction)
 end
 ---取消订阅
 ---@param func 回调方法 参数:先前的值，现在的值
-local function Unsubscribe(self, func)
-    self.Event:Remove(func)
+local function Unsubscribe(self, luaAction)
+    self.Event:Remove(luaAction)
 end
 
 ---构造函数
 ---@param name 变量名
 local function ctor(self, name)
-    self:_setMetaFunc("__tostring",self.__tostring)
+    self:_setMetaFunc("__tostring", self.__tostring)
     self._name = name
     self._event = Set()
 end

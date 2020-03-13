@@ -11,16 +11,9 @@ local UIConfig = {
             PanelName = 'TestPanel',
             --页面预制的名称
             PrefabName = 'testpanel',
-            View = require 'UI.Panel.TestPanel.View.TestPanelView',
-            ViewModel = require 'UI.Panel.TestPanel.ViewModel.TestPanelViewModel',
+            View = require 'UI.Panel.View.TestPanelView',
+            ViewModel = require 'UI.Panel.ViewModel.TestPanelViewModel',
         },
-        TestPanel1 = {
-            Layer = UILayerEnum.Fixed,
-            PanelName = 'TestPanel1',
-            PrefabName = 'testpanel1',
-            View = require 'UI.Panel.TestPanel1.View.TestPanel1View',
-            ViewModel = nil
-        }
     },
     Item = {}
 }

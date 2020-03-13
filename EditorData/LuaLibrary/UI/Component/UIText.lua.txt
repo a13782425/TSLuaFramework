@@ -1,0 +1,17 @@
+local UIText = BaseClass("UIText", UIComponent)
+
+---内容
+UIText.text = {
+    getter = function(self)
+        return self.Component.text
+    end,
+    setter = function(self, value)
+        self.Component.text = tostring(value)
+    end
+}
+
+function UIText:ctor(uiview, unity_object)
+    UIComponent.ctor(self, uiview, unity_object)
+end
+
+return UIText

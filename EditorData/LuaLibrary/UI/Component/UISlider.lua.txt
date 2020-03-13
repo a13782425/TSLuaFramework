@@ -1,0 +1,45 @@
+local UISlider = BaseClass("UISlider", UIComponent)
+
+---拖拽条变化
+UISlider.onValueChanged = {
+    addEvent = function(self, luaAction)
+        self._onValueChanged:Add(luaAction)
+    end,
+    removeEvent = function(self, luaAction)
+        self._onValueChanged:Remove(luaAction)
+    end
+}
+
+---拖拽条的值
+UISlider.value = {
+    getter = function(self)
+        return self.Component.value
+    end,
+    setter = function(self, value)
+        if value ~= self.Component.value then
+            self.Component.value = value
+        end
+    end
+}
+
+function UISlider:ctor(uiview, unity_object)
+    local function tempValueChange(value)
+        self._onValueChanged:ForEach(
+            function(luaAction)
+                luaAction.Func(luaAction.Object, value)
+            end
+        )
+    end
+
+    self._onValueChanged = Set()
+    UIComponent.ctor(self, uiview, unity_object)
+    self.Component.onValueChanged:AddListener(tempValueChange)
+end
+
+---释放时候调用
+function UISlider:OnDestroy()
+    delete(self._onValueChanged)
+    self.Component.onValueChanged:RemoveAllListeners()
+end
+
+return UISlider

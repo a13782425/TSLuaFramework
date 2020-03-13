@@ -15,7 +15,7 @@ end
 
 local function Find(self, predicate)
     if (predicate == nil or type(predicate) ~= "function") then
-        print("predicate is invalid!")
+        Logger.Log("predicate is invalid!")
         return
     end
     local count = self.Count
@@ -29,7 +29,7 @@ end
 
 local function ForEach(self, action)
     if (action == nil or type(action) ~= "function") then
-        print("action is invalid!")
+        Logger.Log("action is invalid!")
         return
     end
     local count = self.Count
@@ -41,7 +41,7 @@ end
 local function IndexOf(self, item)
     local count = self.Count
     for i = 1, count do
-        if self[i] == item then
+        if self._datas[i] == item then
             return i
         end
     end
@@ -51,7 +51,7 @@ end
 local function LastIndexOf(self, item)
     local count = self.Count
     for i = count, 1, -1 do
-        if self[i] == item then
+        if self._datas[i] == item then
             return i
         end
     end
@@ -89,12 +89,12 @@ Set.Find = Find
 Set.ForEach = ForEach
 function iset(set)
     if set.ClassType ~= ClassType.instance then
-        error("只能迭代Set的实例", 2)
+        Logger.LogException("只能迭代Set的实例", 2)
     end
     local nCount = set.Count
     local index = 0
     return function()
-        print(string.format("call close func. %s", index))
+        Logger.Log(string.format("call close func. %s", index))
         index = index + 1
         if index <= nCount then
             if nil ~= set._datas[index] then

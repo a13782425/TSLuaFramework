@@ -1,16 +1,175 @@
+---@class 需要观察的数据
 local Observeable = BaseClass("Observeable")
 
-Observeable.SourceData = {
+---给组件设置对应的值
+local function SetValue(self, value)
+    if self._elePropName == nil then
+        Logger.LogError("请调用For方法设置目标字段")
+        return
+    end
+    if self._component[self._elePropName] then
+        self._component[self._elePropName] = value
+    else
+        Logger.LogError("在Unity组件:" .. GetTypeName(self._component) .. "中没有找到属性:" .. self._elePropName)
+    end
+end
+---计算数据的值
+local function CalValue(self, oldValue, newValue)
+    if self._bindFunc then
+        return self._bindFunc.Func(self._bindFunc.Object, oldValue, newValue)
+    else
+        return newValue
+    end
+end
+---计算组件Value
+local function CalElementValue(self, value)
+    if self._eleFunc then
+        return self._eleFunc.Func(self._eleFunc.Object, value)
+    else
+        return value
+    end
+end
+
+---数据改变
+local function ValueChange(self, oldValue, newValue)
+    local value = CalValue(self, oldValue, newValue)
+    if value ~= oldValue then
+        SetValue(self, value)
+    end
+end
+
+---组件Value改变
+local function ElementValueChange(self, value)
+    if self._bindField then
+        local val = CalElementValue(self, value)
+        self._bindField.Value = val
+    end
+end
+
+Observeable.Element = {
     getter = function(self)
-        return self._sourceData
-    end,
-    setter = function(self, value)
-        self._sourceData = value
+        return self._element
     end
 }
 
-function Observeable:Bind(field)
-    Logger.LogError(field.Name)
+---带参构造函数
+---@param element 游戏物体
+function Observeable:ctor(element)
+    if IsType(element, UIComponent) == false then
+        Logger.LogError(element.ClassName .. " 没有继承UIComponent")
+        return
+    end
+    self._element = element
+    self._component = self.Element.Component
+    self._fieldAction = LuaAction(self, ValueChange)
+    self._eleAction = LuaAction(self, ElementValueChange)
+end
+
+---析构函数
+function Observeable:_dtor()
+    self:Unbind()
+    delete(self._fieldAction)
+    delete(self._eleAction)
+    self._fieldAction = nil
+    self._eleAction = nil
+end
+
+---绑定那个组件属性
+---如果是使用组件值仅支持部分值
+---如果有方法,当组件值发生变化时会调用方法并使用返回值
+---@param elePropName 组件属性
+---@param luaAction Func<eleValue,value>绑定方法可为空
+function Observeable:For(elePropName, luaAction)
+    self._elePropName = elePropName
+    if luaAction then
+        if IsType(luaAction, LuaAction) == false then
+            Logger.LogException("只能绑定LuaAction类型")
+        end
+    end
+    self._eleFunc = luaAction
+    return self
+end
+
+---绑定到字段
+---如果绑定有方法
+---如果有方法,则会调用方法并返回计算值
+---@param bindField 绑定字段
+---@param luaAction Func<new,old,value>绑定方法可为空
+function Observeable:To(bindField, luaAction)
+    local typeName = GetTypeName(bindField)
+    if (typeName == "string") then
+        self._fieldName = typeName
+    elseif (typeName == "BindableProperty") then
+        self._fieldName = bindField.Name
+    end
+    if luaAction then
+        if IsType(luaAction, LuaAction) == false then
+            Logger.LogException("只能绑定LuaAction类型")
+        end
+    end
+    self._bindFunc = luaAction
+    return self
+end
+
+---仅一次数据到UI
+function Observeable:OneTime()
+    self._bindMode = BindingMode.OneTime
+    return self
+end
+---每次UI变动时更新数据源
+function Observeable:OneWayToSource()
+    self._bindMode = BindingMode.OneWayToSource
+    return self
+end
+---数据到UI
+function Observeable:OneWay()
+    self._bindMode = BindingMode.OneWay
+    return self
+end
+---数据和UI双向绑定
+function Observeable:TwoWay()
+    self._bindMode = BindingMode.TwoWay
+    return self
+end
+
+---绑定数据类
+---@param source 数据源
+function Observeable:Bind(source)
+    --先拿到数据中心对应的字段
+    self._bindField = source[self._fieldName]
+    if IsNull(self._bindField) then
+        Logger.LogError("在源中没有找到字段:" .. self._fieldName)
+        return
+    end
+    if IsType(self._bindField, BindableProperty) == false then
+        Logger.LogError("在源中字段:" .. self._fieldName .. "没有继承BindableProperty")
+    end
+    if self._bindMode == BindingMode.OneTime then
+        --OneTime
+        SetValue(self, CalValue(self, nil, self._bindField.Value))
+    elseif self._bindMode == BindingMode.OneWay then
+        --OneWay
+        self._bindField:Subscribe(self._fieldAction)
+        SetValue(self, CalValue(self, nil, self._bindField.Value))
+    elseif self._bindMode == BindingMode.TwoWay then
+        --TwoWay
+        self._bindField:Subscribe(self._fieldAction)
+        self.Element.onValueChanged:addEvent(self._eleAction)
+        SetValue(self, CalValue(self, nil, self._bindField.Value))
+    elseif self._bindMode == BindingMode.OneWayToSource then
+        --OneWayToSource
+        self.Element.onValueChanged:addEvent(self._eleAction)
+    end
+end
+---解绑数据
+function Observeable:Unbind()
+    if self._bindField then
+        self._bindField:Unsubscribe(self._fieldAction)
+    end
+    if self._bindMode == BindingMode.OneWayToSource or self._bindMode == BindingMode.TwoWay then
+        self.Element.onValueChanged:removeEvent(self._eleAction)
+    end
+    self._bindField = nil
 end
 
 return Observeable

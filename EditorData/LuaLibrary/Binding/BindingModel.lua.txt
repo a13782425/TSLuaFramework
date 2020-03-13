@@ -4,11 +4,47 @@
 
 local BindingModel = BaseClass("BindingModel")
 
+local function __newindex(table, key, value)
+    if Keywords[key] then
+        Logger.LogException(key .. " 是只读属性,不能修改 !!", 2)
+    end
+    local meta = getmetatable(table)
+    local val = meta.__fields[key]
+    if val ~= nil then
+        if IsType(val, BindableProperty) then
+            val.Value = value
+        end
+        return
+    end
+    global__newindex(table, key, value)
+end
+
 local function ctor(self, view)
+    BindingModel.base._ctor(self)
+    self._luaActions = {}
+    self:_setMetaFunc("__newindex", __newindex)
     self.View = view
     self:Initlialize()
 end
 local function _dtor(self)
+    for key, value in pairs(self._luaActions) do
+        delete(value)
+    end
+    self._luaActions = nil
+end
+
+---获得一个LuaAction
+---@param action 方法
+---@return LuaAction
+function BindingModel:GetLuaAction(action)
+    local luaAction = self._luaActions[action]
+    if luaAction then
+        return luaAction
+    else
+        luaAction = LuaAction(self, action)
+        self._luaActions[action] = luaAction
+        return luaAction
+    end
 end
 
 ---初始化

@@ -1,0 +1,59 @@
+---@class 观察者
+local Observer = BaseClass("Observer")
+
+local function sourceChange(self, value)
+    if IsNull(value) then
+        --解除所有绑定
+        self:UnbindAll()
+    elseif value ~= self.SourceData then
+        --解除所有原有的绑定
+        self:UnbindAll()
+        --重新绑定新的源
+        self._bindSet:ForEach(
+            function(item)
+                item:Bind(value)
+            end
+        )
+    end
+    self._sourceData = value
+end
+
+Observer.SourceData = {
+    getter = function(self)
+        return self._sourceData
+    end,
+    setter = function(self, value)
+        sourceChange(self, value)
+    end
+}
+
+--Observer._bindSet = nil
+
+function Observer:_ctor()
+    self._bindSet = Set()
+end
+
+---绑定数据
+---@param game_obj 绑定的游戏物体
+---@return 返回一个可观察的对象Observeable
+function Observer:Bind(game_obj)
+    if IsNull(game_obj) then
+        Logger.LogError("传入的游戏物体为空")
+        return nil
+    else
+        local obs = Observeable(game_obj)
+        self._bindSet:Add(obs)
+        return obs
+    end
+end
+
+---解绑所有数据
+function Observer:UnbindAll()
+    self._bindSet:ForEach(
+        function(item)
+            item:Unbind()
+        end
+    )
+end
+
+return Observer

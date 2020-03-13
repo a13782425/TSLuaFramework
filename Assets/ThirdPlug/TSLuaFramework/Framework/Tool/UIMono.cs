@@ -5,22 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using XLua;
 
 namespace TSLuaFramework.Tool
 {
     public class UIEvent
     {
-        private GameObject gameObject;
+        private GameObject _gameObject;
 
         public UIEvent(GameObject obj)
         {
-            gameObject = obj;
+            _gameObject = obj;
             _eventDic = new Dictionary<EventTriggerType, UIEventBase>();
         }
 
         public void Destroy()
         {
-            gameObject = null;
+            foreach (var item in _eventDic)
+            {
+                item.Value.luaTables.Clear();
+            }
+            _gameObject = null;
             _eventDic = null;
         }
 
@@ -29,88 +34,96 @@ namespace TSLuaFramework.Tool
         /// </summary>
         private Dictionary<EventTriggerType, UIEventBase> _eventDic = null;
 
-        public void AddPointerEvent(EventTriggerType triggerType, Action<PointerEventData> value)
+        public void AddPointerEvent(EventTriggerType triggerType, LuaTable value)
         {
-            Debug.LogError("AddPointerEvent:" + triggerType.ToString());
             if (_eventDic.ContainsKey(triggerType))
             {
-                _eventDic[triggerType].pointerCallback += value;
+                _eventDic[triggerType].luaTables.Add(value.Get<int>("_instanceId"), value);
             }
             else
             {
-                UIEventBase uIEventBase = UITool.GetUIEventBase(this.gameObject, triggerType);
+                UIEventBase uIEventBase = UITool.GetUIEventBase(this._gameObject, triggerType);
                 if (uIEventBase == null)
                 {
                     throw new Exception($"{triggerType}的事件类型没有找到！");
                 }
                 _eventDic.Add(triggerType, uIEventBase);
-                uIEventBase.pointerCallback += value;
+                uIEventBase.luaTables.Add(value.Get<int>("_instanceId"), value);
             }
         }
-        public void AddBaseEvent(EventTriggerType triggerType, Action<BaseEventData> value)
+        public void AddBaseEvent(EventTriggerType triggerType, LuaTable value)
         {
             if (_eventDic.ContainsKey(triggerType))
             {
-                _eventDic[triggerType].baseCallback += value;
+                _eventDic[triggerType].luaTables.Add(value.Get<int>("_instanceId"), value);
             }
             else
             {
-                UIEventBase uIEventBase = UITool.GetUIEventBase(this.gameObject, triggerType);
+                UIEventBase uIEventBase = UITool.GetUIEventBase(this._gameObject, triggerType);
                 if (uIEventBase == null)
                 {
                     throw new Exception($"{triggerType}的事件类型没有找到！");
                 }
                 _eventDic.Add(triggerType, uIEventBase);
-                uIEventBase.baseCallback += value;
+                uIEventBase.luaTables.Add(value.Get<int>("_instanceId"), value);
             }
         }
-        public void AddAxisEvent(EventTriggerType triggerType, Action<AxisEventData> value)
+        public void AddAxisEvent(EventTriggerType triggerType, LuaTable value)
         {
             if (_eventDic.ContainsKey(triggerType))
             {
-                _eventDic[triggerType].axisCallback += value;
+                _eventDic[triggerType].luaTables.Add(value.Get<int>("_instanceId"), value);
             }
             else
             {
-                UIEventBase uIEventBase = UITool.GetUIEventBase(this.gameObject, triggerType);
+                UIEventBase uIEventBase = UITool.GetUIEventBase(this._gameObject, triggerType);
                 if (uIEventBase == null)
                 {
                     throw new Exception($"{triggerType}的事件类型没有找到！");
                 }
                 _eventDic.Add(triggerType, uIEventBase);
-                uIEventBase.axisCallback += value;
+                uIEventBase.luaTables.Add(value.Get<int>("_instanceId"), value);
             }
         }
 
-        public void RemovePointerEvent(EventTriggerType triggerType, Action<PointerEventData> value)
+        public void RemovePointerEvent(EventTriggerType triggerType, LuaTable value)
         {
-            Debug.LogError("RemovePointerEvent:" + triggerType.ToString());
             if (_eventDic.ContainsKey(triggerType))
             {
-                _eventDic[triggerType].pointerCallback -= value;
+                int key = value.Get<int>("_instanceId");
+                if (_eventDic[triggerType].luaTables.ContainsKey(key))
+                {
+                    _eventDic[triggerType].luaTables.Remove(key);
+                }
             }
         }
-        public void RemoveBaseEvent(EventTriggerType triggerType, Action<BaseEventData> value)
+        public void RemoveBaseEvent(EventTriggerType triggerType, LuaTable value)
         {
             if (_eventDic.ContainsKey(triggerType))
             {
-                _eventDic[triggerType].baseCallback -= value;
+                int key = value.Get<int>("_instanceId");
+                if (_eventDic[triggerType].luaTables.ContainsKey(key))
+                {
+                    _eventDic[triggerType].luaTables.Remove(key);
+                }
             }
         }
-        public void RemoveAxisEvent(EventTriggerType triggerType, Action<AxisEventData> value)
+        public void RemoveAxisEvent(EventTriggerType triggerType, LuaTable value)
         {
             if (_eventDic.ContainsKey(triggerType))
             {
-                _eventDic[triggerType].axisCallback -= value;
+                int key = value.Get<int>("_instanceId");
+                if (_eventDic[triggerType].luaTables.ContainsKey(key))
+                {
+                    _eventDic[triggerType].luaTables.Remove(key);
+                }
             }
         }
     }
 
     public class UIEventBase : MonoBehaviour
     {
-        internal Action<PointerEventData> pointerCallback;
-        internal Action<BaseEventData> baseCallback;
-        internal Action<AxisEventData> axisCallback;
+        internal Dictionary<int, LuaTable> luaTables = new Dictionary<int, LuaTable>();
     }
     //IPointerEnterHandler
     public class UIPointerEnterEvent : UIEventBase, IPointerEnterHandler
@@ -119,7 +132,16 @@ namespace TSLuaFramework.Tool
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            pointerCallback?.Invoke(eventData);
+            List<int> keys= luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IPointerExitHandler
@@ -129,7 +151,16 @@ namespace TSLuaFramework.Tool
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            pointerCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IPointerDownHandler
@@ -139,7 +170,16 @@ namespace TSLuaFramework.Tool
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            pointerCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IPointerUpHandler
@@ -149,7 +189,16 @@ namespace TSLuaFramework.Tool
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            pointerCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IPointerClickHandler
@@ -159,7 +208,16 @@ namespace TSLuaFramework.Tool
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            pointerCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IInitializePotentialDragHandler
@@ -169,7 +227,16 @@ namespace TSLuaFramework.Tool
 
         public void OnInitializePotentialDrag(PointerEventData eventData)
         {
-            pointerCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IBeginDragHandler
@@ -179,7 +246,16 @@ namespace TSLuaFramework.Tool
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            pointerCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IDragHandler
@@ -189,7 +265,16 @@ namespace TSLuaFramework.Tool
 
         public void OnDrag(PointerEventData eventData)
         {
-            pointerCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IEndDragHandler
@@ -199,7 +284,16 @@ namespace TSLuaFramework.Tool
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            pointerCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IDropHandler
@@ -209,7 +303,16 @@ namespace TSLuaFramework.Tool
 
         public void OnDrop(PointerEventData eventData)
         {
-            pointerCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IScrollHandler
@@ -219,7 +322,16 @@ namespace TSLuaFramework.Tool
 
         public void OnScroll(PointerEventData eventData)
         {
-            pointerCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IUpdateSelectedHandler
@@ -229,7 +341,16 @@ namespace TSLuaFramework.Tool
 
         public void OnUpdateSelected(BaseEventData eventData)
         {
-            baseCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //ISelectHandler
@@ -239,7 +360,16 @@ namespace TSLuaFramework.Tool
 
         public void OnSelect(BaseEventData eventData)
         {
-            baseCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IDeselectHandler
@@ -249,7 +379,16 @@ namespace TSLuaFramework.Tool
 
         public void OnDeselect(BaseEventData eventData)
         {
-            baseCallback?.Invoke(eventData); ;
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //IMoveHandler
@@ -259,7 +398,16 @@ namespace TSLuaFramework.Tool
 
         public void OnMove(AxisEventData eventData)
         {
-            axisCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //ISubmitHandler
@@ -269,7 +417,16 @@ namespace TSLuaFramework.Tool
 
         public void OnSubmit(BaseEventData eventData)
         {
-            baseCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
     //ICancelHandler
@@ -279,7 +436,16 @@ namespace TSLuaFramework.Tool
 
         public void OnCancel(BaseEventData eventData)
         {
-            baseCallback?.Invoke(eventData);
+            List<int> keys = luaTables.Keys.ToList();
+            foreach (var item in keys)
+            {
+                if (luaTables.ContainsKey(item))
+                {
+                    LuaFunction luaFunction = luaTables[item].Get<LuaFunction>("_func");
+                    LuaTable luaObj = luaTables[item].Get<LuaTable>("_obj");
+                    luaFunction.Call(luaObj, eventData);
+                }
+            }
         }
     }
 

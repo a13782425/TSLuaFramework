@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0a1860e476786a64b9b44a57be28d1bf
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - UIDescription: {fileID: 4900000, guid: e788dc1f55c9e8b4686394a786088abc, type: 3}
+  - ModelTemplate: {fileID: 4900000, guid: 4a69da234a608d64685cf52f85354565, type: 3}
+  - ConfigTemplate: {fileID: 4900000, guid: 02887dc6d77fd864ba3eaa60bbcc043b, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

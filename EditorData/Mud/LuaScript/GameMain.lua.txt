@@ -55,10 +55,10 @@ local function Start()
 
     -- 模块启动
     CameraManager:GetInstance():Startup()
-    -- UpdateManager:GetInstance():Startup()
-    -- TimerManager:GetInstance():Startup()
+    UpdateManager:GetInstance():Startup()
+    TimerManager:GetInstance():Startup()
     ResourcesManager:GetInstance():Startup()
-    UIManager:GetInstance():Startup();
+    UIManager:GetInstance():Startup()
     UIManager:GetInstance():ShowPanel(UIConfig.Panel.TestPanel)
     --UIManager:GetInstance():ShowPanel(UIConfig.Panel.TestPanel1)
 end
@@ -66,10 +66,10 @@ end
 local function OnApplicationQuit()
     print("GameMain end...")
     --释放模块
-    UIManager:GetInstance():Dispose();
+    UIManager:GetInstance():Dispose()
     ResourcesManager:GetInstance():Dispose()
-    -- TimerManager:GetInstance():Dispose()
-    -- UpdateManager:GetInstance():Dispose()
+    TimerManager:GetInstance():Dispose()
+    UpdateManager:GetInstance():Dispose()
     CameraManager:GetInstance():Dispose()
 end
 

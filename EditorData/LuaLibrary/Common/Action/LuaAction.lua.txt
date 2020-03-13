@@ -1,0 +1,20 @@
+local LuaAction = BaseClass("LuaAction")
+
+LuaAction.Object = {
+    getter = function(self)
+        return self._obj
+    end
+}
+LuaAction.Func = {
+    getter = function(self)
+        return self._func
+    end
+}
+
+function LuaAction:ctor(obj, func)
+    LuaAction.base._ctor(self)
+    self._obj = obj
+    self._func = func
+end
+
+return LuaAction

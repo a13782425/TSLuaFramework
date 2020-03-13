@@ -11,7 +11,7 @@ internal static class PackResourceEditor
 {
     private const string PACK_LUA_PATH = "Pack";
 
-    [MenuItem("TSFrame/资源/打包Lua", false, 0)]
+    [MenuItem("TSFrame/资源/打包Lua", false, 102)]
     private static void PackLuaCore()
     {
         var dirPath = EditorUtility.OpenFolderPanel("选择文件夹", string.Empty, string.Empty);

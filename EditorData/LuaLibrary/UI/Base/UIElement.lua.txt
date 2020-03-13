@@ -10,7 +10,6 @@
 ---@class 所有UI的基类
 local UIElement = BaseClass("UIElement")
 
-local GameTool = CS.TSLuaFramework.Tool.GameTool
 local UIEvent = CS.TSLuaFramework.Tool.UIEvent
 local EventTriggerType = CS.UnityEngine.EventSystems.EventTriggerType
 
@@ -32,7 +31,6 @@ function UIElement.Destroy(element)
     element:Internal_OnDestroy()
     Object.Destroy(element.gameObject)
     element._gameObject = nil
-    GameTool.RecoverInstanceId(element.InstanceId)
     delete(element)
     element = nil
 end
@@ -41,7 +39,6 @@ function UIElement.DestroyImmediate(element)
     element:Internal_OnDestroy()
     Object.DestroyImmediate(element.gameObject)
     element._gameObject = nil
-    GameTool.RecoverInstanceId(element.InstanceId)
     delete(element)
     element = nil
 end
@@ -49,13 +46,6 @@ end
 --endregion 静态方法结束
 
 --region 属性开始
-
----实例ID
-UIElement.InstanceId = {
-    getter = function(self)
-        return self._instanceId
-    end
-}
 
 ---游戏物体
 UIElement.gameObject = {
@@ -117,214 +107,350 @@ UIElement.active = {
 
 ---Unity的一个事件,具体查Unity的文档
 
----拖动开始事件(Func<PointerEventData>)
+---拖动开始事件(LuaAction<element,PointerEventData>)
 UIElement.onBeginDrag = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddPointerEvent(EventTriggerType.BeginDrag, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddPointerEvent(EventTriggerType.BeginDrag, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemovePointerEvent(EventTriggerType.BeginDrag, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemovePointerEvent(EventTriggerType.BeginDrag, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----拖动中事件(Func<PointerEventData>)
+---拖动中事件(LuaAction<element,PointerEventData>)
 UIElement.onDrag = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddPointerEvent(EventTriggerType.Drag, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddPointerEvent(EventTriggerType.Drag, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemovePointerEvent(EventTriggerType.Drag, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemovePointerEvent(EventTriggerType.Drag, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----拖动结束事件(Func<PointerEventData>)
+---拖动结束事件(LuaAction<element,PointerEventData>)
 UIElement.onEndDrag = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddPointerEvent(EventTriggerType.EndDrag, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddPointerEvent(EventTriggerType.EndDrag, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemovePointerEvent(EventTriggerType.EndDrag, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemovePointerEvent(EventTriggerType.EndDrag, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----指针进入事件(Func<PointerEventData>)
+---指针进入事件(LuaAction<element,PointerEventData>)
 UIElement.onPointerEnter = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddPointerEvent(EventTriggerType.PointerEnter, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddPointerEvent(EventTriggerType.PointerEnter, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemovePointerEvent(EventTriggerType.PointerEnter, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemovePointerEvent(EventTriggerType.PointerEnter, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----指针离开事件(Func<PointerEventData>)
+---指针离开事件(LuaAction<element,PointerEventData>)
 UIElement.onPointerExit = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddPointerEvent(EventTriggerType.PointerExit, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddPointerEvent(EventTriggerType.PointerExit, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemovePointerEvent(EventTriggerType.PointerExit, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemovePointerEvent(EventTriggerType.PointerExit, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----指针按下事件(Func<PointerEventData>)
+---指针按下事件(LuaAction<element,PointerEventData>)
 UIElement.onPointDown = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddPointerEvent(EventTriggerType.PointerDown, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddPointerEvent(EventTriggerType.PointerDown, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemovePointerEvent(EventTriggerType.PointerDown, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemovePointerEvent(EventTriggerType.PointerDown, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----接收拖动事件(Func<PointerEventData>)
+---接收拖动事件(LuaAction<element,PointerEventData>)
 ---接受实现IDragHandler接口的组件拖动到本组件上面松开时触发
 UIElement.onDrop = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddPointerEvent(EventTriggerType.Drop, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddPointerEvent(EventTriggerType.Drop, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemovePointerEvent(EventTriggerType.Drop, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemovePointerEvent(EventTriggerType.Drop, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----指针抬起事件(Func<PointerEventData>)
+---指针抬起事件(LuaAction<element,PointerEventData>)
 UIElement.onPointerUp = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddPointerEvent(EventTriggerType.PointerUp, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddPointerEvent(EventTriggerType.PointerUp, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemovePointerEvent(EventTriggerType.PointerUp, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemovePointerEvent(EventTriggerType.PointerUp, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----指针点击事件(Func<PointerEventData>)
+---指针点击事件(LuaAction<element,PointerEventData>)
 ---在组件可视的区域按下且抬起时指针处于区域内(按下离开区域后抬起不会触发)
 UIElement.onPointerClick = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddPointerEvent(EventTriggerType.PointerClick, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddPointerEvent(EventTriggerType.PointerClick, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemovePointerEvent(EventTriggerType.PointerClick, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemovePointerEvent(EventTriggerType.PointerClick, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----初始化潜在的拖动事件(Func<PointerEventData>)
+---初始化潜在的拖动事件(LuaAction<element,PointerEventData>)
 ---(必须实现IDragHandler接口)与IPointerDownHandler事件触发条件大致相同
 UIElement.onInitializePotentialDrag = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddPointerEvent(EventTriggerType.InitializePotentialDrag, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddPointerEvent(EventTriggerType.InitializePotentialDrag, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemovePointerEvent(EventTriggerType.InitializePotentialDrag, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemovePointerEvent(EventTriggerType.InitializePotentialDrag, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----滚动事件(Func<PointerEventData>)
+---滚动事件(LuaAction<element,PointerEventData>)
 ---滑轮在上面滚动时触发
 UIElement.onScroll = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddPointerEvent(EventTriggerType.Scroll, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddPointerEvent(EventTriggerType.Scroll, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemovePointerEvent(EventTriggerType.Scroll, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemovePointerEvent(EventTriggerType.Scroll, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----选中物体每帧触发事件(Func<BaseEventData>)
+---选中物体每帧触发事件(LuaAction<element,BaseEventData>)
 UIElement.onUpdateSelected = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddBaseEvent(EventTriggerType.UpdateSelected, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddBaseEvent(EventTriggerType.UpdateSelected, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemoveBaseEvent(EventTriggerType.UpdateSelected, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemoveBaseEvent(EventTriggerType.UpdateSelected, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----选择事件(Func<BaseEventData>)
+---选择事件(LuaAction<element,BaseEventData>)
 UIElement.onSelect = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddBaseEvent(EventTriggerType.Select, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddBaseEvent(EventTriggerType.Select, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemoveBaseEvent(EventTriggerType.Select, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemoveBaseEvent(EventTriggerType.Select, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----取消选择事件(Func<BaseEventData>)
+---取消选择事件(LuaAction<element,BaseEventData>)
 UIElement.onDeselect = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddBaseEvent(EventTriggerType.Deselect, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddBaseEvent(EventTriggerType.Deselect, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemoveBaseEvent(EventTriggerType.Deselect, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemoveBaseEvent(EventTriggerType.Deselect, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----提交事件(Func<BaseEventData>)
+---提交事件(LuaAction<element,BaseEventData>)
 ---按下InputManager里的Submit对应的按键(PC、Mac默认:Enter键)。Input.GetButtonDown
 UIElement.onSubmit = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddBaseEvent(EventTriggerType.Submit, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddBaseEvent(EventTriggerType.Submit, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemoveBaseEvent(EventTriggerType.Submit, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemoveBaseEvent(EventTriggerType.Submit, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----取消事件(Func<BaseEventData>)
+---取消事件(LuaAction<element,BaseEventData>)
 ---按下InputManager里的Cancel对应的按键(PC、Mac默认:Esc键)。Input.GetButtonDown
 UIElement.onCancel = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddBaseEvent(EventTriggerType.Cancel, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddBaseEvent(EventTriggerType.Cancel, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemoveBaseEvent(EventTriggerType.Cancel, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemoveBaseEvent(EventTriggerType.Cancel, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
----移动事件(上下左右)(Func<AxisEventData>)
+---移动事件(上下左右)(LuaAction<element,AxisEventData>)
 ---与InputManager里的Horizontal和Vertical按键相对应。Input.GetAxisRaw
 UIElement.onMove = {
     addEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:AddBaseEvent(EventTriggerType.Move, func)
+        if IsType(func, LuaAction) then
+            self._uievent:AddBaseEvent(EventTriggerType.Move, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end,
     removeEvent = function(self, func)
         checkUIEvent(self)
-        self._uievent:RemoveBaseEvent(EventTriggerType.Move, func)
+        if IsType(func, LuaAction) then
+            self._uievent:RemoveBaseEvent(EventTriggerType.Move, func)
+        else
+            Logger.LogWarning("事件只支持LuaAction")
+        end
     end
 }
 
@@ -333,17 +459,30 @@ UIElement.onMove = {
 ---构造函数
 ---@param obj 游戏物体<可为空>
 function UIElement:ctor(obj)
+    UIElement.base._ctor(self)
     self._gameObject = obj.gameObject
     self._transform = obj.transform
     self._rectTransform = obj:GetComponent(typeof(RectTransform))
-    self._instanceId = GameTool.GetInstanceId()
+    self._luaActions = {}
 end
 
 function UIElement:_ctor()
     self._gameObject = nil
     self._transform = nil
     self._rectTransform = nil
-    self._instanceId = GameTool.GetInstanceId()
+    self._luaActions = {}
+end
+
+function UIElement:_dtor()
+    Logger.LogError(self.ClassName .. " dtor")
+    if self._uievent ~= nil then
+        self._uievent:Destroy()
+    end
+    for key, value in pairs(self._luaActions) do
+        delete(value)
+    end
+    self._uievent = nil
+    self._luaActions = nil
 end
 
 --region 公共虚函数开始(所有子类可重写)
@@ -403,6 +542,20 @@ end
 ---设置到当前层级的最后一位
 function UIElement:SetAsLastSibling()
     self.rectTransform:SetAsLastSibling()
+end
+
+---获得一个LuaAction
+---@param action 方法
+---@return LuaAction
+function UIElement:GetLuaAction(action)
+    local luaAction = self._luaActions[action]
+    if luaAction then
+        return luaAction
+    else
+        luaAction = LuaAction(self, action)
+        self._luaActions[action] = luaAction
+        return luaAction
+    end
 end
 
 ---添加一个组件

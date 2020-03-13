@@ -14,7 +14,7 @@ function UIItem:OnDestroy()
     if self.BelongView ~= nil then
         self.BelongView:RemoveElement(self)
     end
-    self.base:OnDestroy()
+    UIView.OnDestroy(self)
 end
 
 return UIItem

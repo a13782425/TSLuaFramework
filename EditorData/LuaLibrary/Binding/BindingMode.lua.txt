@@ -1,0 +1,11 @@
+BindingMode = {
+    --- Model变更新UI
+    OneWay = 1,
+    --- Model更新UI
+    --- 绑定时候更新一次
+    OnTime = 2,
+    --- UI更新Model
+    OneWayToSource = 4,
+    --- UI和Model互相更新(慎用，容易变成递归操作)
+    TwoWay = 8
+}

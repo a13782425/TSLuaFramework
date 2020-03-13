@@ -1,0 +1,45 @@
+local UIDropdown = BaseClass("UIDropdown", UIComponent)
+
+---下拉菜单的值改变
+UIDropdown.onValueChanged = {
+    addEvent = function(self, luaAction)
+        self._onValueChanged:Add(luaAction)
+    end,
+    removeEvent = function(self, luaAction)
+        self._onValueChanged:Remove(luaAction)
+    end
+}
+
+---下拉菜单的值
+UIDropdown.value = {
+    getter = function(self)
+        return self.Component.value
+    end,
+    setter = function(self, value)
+        if value ~= self.Component.value then
+            self.Component.value = value
+        end
+    end
+}
+
+function UIDropdown:ctor(uiview, unity_object)
+    local function tempValueChange(value)
+        self._onValueChanged:ForEach(
+            function(luaAction)
+                luaAction.Func(luaAction.Object, value)
+            end
+        )
+    end
+
+    self._onValueChanged = Set()
+    UIComponent.ctor(self, uiview, unity_object)
+    self.Component.onValueChanged:AddListener(tempValueChange)
+end
+
+---释放时候调用
+function UIDropdown:OnDestroy()
+    delete(self._onValueChanged)
+    self.Component.onValueChanged:RemoveAllListeners()
+end
+
+return UIDropdown

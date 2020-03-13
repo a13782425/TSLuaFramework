@@ -37,7 +37,6 @@ local function AddListener(self, e_type, e_listener, ...)
 			return
 		end
 	end
-	
 	event[e_listener] = setmetatable(SafePack(...), {__mode = "kv"}) 
 	self.events[e_type] = event;
 end

@@ -23,6 +23,7 @@ public sealed class GameLaunch : MonoBehaviour
         //{
         //    Debug.LogError("解密后：" + item);
         //}
+        Application.targetFrameRate = 60;
         GameApp.Instance.Init();
         //GameApp.Instance.SetLuaLibraryPath("Assets/ThirdPlug/TSFrame/LuaScript").Init().SetAssetBundlePath("AssetBundles/StandaloneWindows64");
     }

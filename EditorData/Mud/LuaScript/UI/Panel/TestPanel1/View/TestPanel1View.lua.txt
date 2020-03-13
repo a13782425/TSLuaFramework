@@ -1,5 +1,0 @@
-
-local TestPanel1View = BaseClass("TestPanel1View",UIView)
-
-
-return TestPanel1View

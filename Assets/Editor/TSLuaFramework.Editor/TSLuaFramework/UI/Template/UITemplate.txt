@@ -1,0 +1,37 @@
+﻿using System;
+using System.Collections.Generic;
+using TSFrame;
+using TSFrame.MVVM;
+using TSFrame.UI;
+using UnityEngine;
+using UnityEngine.UI;
+
+
+public partial class {ClassName}
+{
+    [Inject]
+    private {ModelClass} _{ModelClassName};
+
+    protected override void OnCreate()
+    {
+        AddListener();
+    }
+
+    protected override void OnDestroy()
+    {
+        RemoveListener();
+    }
+
+    #region Listener
+    private void AddListener()
+    {
+
+    }
+    private void RemoveListener()
+    {
+
+    }
+
+    #endregion
+
+}

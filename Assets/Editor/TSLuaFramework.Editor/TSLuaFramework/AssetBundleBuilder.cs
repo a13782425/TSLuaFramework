@@ -8,7 +8,7 @@ using UnityEngine;
 
 internal class AssetBundleBuilder
 {
-    [MenuItem("TSFrame/资源/生成AB目录", false, 0)]
+    [MenuItem("TSFrame/资源/生成AB目录", false, 102)]
     private static void GenAssetBundleCatalog()
     {
         var newPath = EditorUtility.OpenFilePanelWithFilters("选择文件", string.Empty, new string[] { "清单", "manifest" });

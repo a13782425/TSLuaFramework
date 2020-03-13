@@ -1,8 +1,25 @@
 local UIImage = BaseClass("UIImage", UIComponent)
 
+UIImage.sprite = {
+    getter = function(self)
+        return self.Component.sprite
+    end,
+    setter = function(self, value)
+        self.Component.sprite = value
+    end
+}
+
+UIImage.fillAmount = {
+    getter = function(self)
+        return self.Component.fillAmount
+    end,
+    setter = function(self, value)
+        self.Component.fillAmount = value
+    end
+}
+
 function UIImage:ctor(uiview, unity_object)
-    self.base.ctor(self, uiview, unity_object)
-    Logger.LogError(self.name)
+    UIComponent.ctor(self, uiview, unity_object)
 end
 
 return UIImage

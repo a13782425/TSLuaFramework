@@ -1,0 +1,16 @@
+
+local TestPanelViewModel = BaseClass("TestPanelViewModel",BindingModel);
+
+
+
+
+
+function TestPanelViewModel:Initlialize()
+    self.aa_color = BindableProperty("aa_color");
+    self.aa_Text = BindableProperty("aa_Text");
+end
+
+
+
+
+return TestPanelViewModel

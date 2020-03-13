@@ -104,7 +104,7 @@ namespace XLua
 			
 			{
 				UnityEngine.EventSystems.EventTriggerType _triggerType;translator.Get(L, 2, out _triggerType);
-				System.Action<UnityEngine.EventSystems.PointerEventData> _value = translator.GetDelegate<System.Action<UnityEngine.EventSystems.PointerEventData>>(L, 3);
+				XLua.LuaTable _value = (XLua.LuaTable)translator.GetObject(L, 3, typeof(XLua.LuaTable));
 				
 				gen_to_be_invoked.AddPointerEvent( _triggerType, _value );
 				
@@ -127,7 +127,7 @@ namespace XLua
 			
 			{
 				UnityEngine.EventSystems.EventTriggerType _triggerType;translator.Get(L, 2, out _triggerType);
-				System.Action<UnityEngine.EventSystems.BaseEventData> _value = translator.GetDelegate<System.Action<UnityEngine.EventSystems.BaseEventData>>(L, 3);
+				XLua.LuaTable _value = (XLua.LuaTable)translator.GetObject(L, 3, typeof(XLua.LuaTable));
 				
 				gen_to_be_invoked.AddBaseEvent( _triggerType, _value );
 				
@@ -150,7 +150,7 @@ namespace XLua
 			
 			{
 				UnityEngine.EventSystems.EventTriggerType _triggerType;translator.Get(L, 2, out _triggerType);
-				System.Action<UnityEngine.EventSystems.AxisEventData> _value = translator.GetDelegate<System.Action<UnityEngine.EventSystems.AxisEventData>>(L, 3);
+				XLua.LuaTable _value = (XLua.LuaTable)translator.GetObject(L, 3, typeof(XLua.LuaTable));
 				
 				gen_to_be_invoked.AddAxisEvent( _triggerType, _value );
 				
@@ -173,7 +173,7 @@ namespace XLua
 			
 			{
 				UnityEngine.EventSystems.EventTriggerType _triggerType;translator.Get(L, 2, out _triggerType);
-				System.Action<UnityEngine.EventSystems.PointerEventData> _value = translator.GetDelegate<System.Action<UnityEngine.EventSystems.PointerEventData>>(L, 3);
+				XLua.LuaTable _value = (XLua.LuaTable)translator.GetObject(L, 3, typeof(XLua.LuaTable));
 				
 				gen_to_be_invoked.RemovePointerEvent( _triggerType, _value );
 				
@@ -196,7 +196,7 @@ namespace XLua
 			
 			{
 				UnityEngine.EventSystems.EventTriggerType _triggerType;translator.Get(L, 2, out _triggerType);
-				System.Action<UnityEngine.EventSystems.BaseEventData> _value = translator.GetDelegate<System.Action<UnityEngine.EventSystems.BaseEventData>>(L, 3);
+				XLua.LuaTable _value = (XLua.LuaTable)translator.GetObject(L, 3, typeof(XLua.LuaTable));
 				
 				gen_to_be_invoked.RemoveBaseEvent( _triggerType, _value );
 				
@@ -219,7 +219,7 @@ namespace XLua
 			
 			{
 				UnityEngine.EventSystems.EventTriggerType _triggerType;translator.Get(L, 2, out _triggerType);
-				System.Action<UnityEngine.EventSystems.AxisEventData> _value = translator.GetDelegate<System.Action<UnityEngine.EventSystems.AxisEventData>>(L, 3);
+				XLua.LuaTable _value = (XLua.LuaTable)translator.GetObject(L, 3, typeof(XLua.LuaTable));
 				
 				gen_to_be_invoked.RemoveAxisEvent( _triggerType, _value );
 				

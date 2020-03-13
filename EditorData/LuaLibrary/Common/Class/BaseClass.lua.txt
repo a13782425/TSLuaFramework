@@ -7,13 +7,13 @@ local _class = {}
 --已经定义过的类
 local classList = {}
 
--- 自定义类型
+---自定义类型
 ClassType = {
     class = 1,
     instance = 2
 }
---关键字
-local Keywords = {
+---关键字
+Keywords = {
     __call = 1,
     __index = 1,
     __newindex = 1,
@@ -25,6 +25,9 @@ local Keywords = {
     _dtor = 1,
     _setMetaFunc = 1
 }
+
+--TempList = {}
+
 ---所有类的基类
 local Object = {
     base = nil,
@@ -33,11 +36,22 @@ local Object = {
     ClassType = ClassType.class,
     __init = false,
     __delete = false,
+    InstanceId = {
+        getter = function(self)
+            return self._instanceId
+        end
+    },
     ---构造函数
-    _dtor = function(self)
+    _ctor = function(self)
+        if self._instanceId == nil then
+            self._instanceId = CS.TSLuaFramework.Tool.GameTool.GetInstanceId()
+        end
     end,
     ---析构函数
-    _ctor = function(self)
+    _dtor = function(self)
+        if self.InstanceId then
+            CS.TSLuaFramework.Tool.GameTool.RecoverInstanceId(self.InstanceId)
+        end
     end,
     ---设置原方法
     _setMetaFunc = function(self, funcName, func)
@@ -58,28 +72,27 @@ local function checkDefaultFunc(class)
         local tor = rawget(cls, "_ctor")
         if tor == nil then
             rawset(cls, "_ctor", nilFunc)
-        elseif type(tor) ~= "function" then
+        elseif GetTypeName(tor) ~= "function" then
             rawset(cls, "_ctor", nilFunc)
         end
         --析构函数
         tor = rawget(cls, "_dtor")
         if tor == nil then
             rawset(cls, "_dtor", nilFunc)
-        elseif type(tor) ~= "function" then
+        elseif GetTypeName(tor) ~= "function" then
             rawset(cls, "_dtor", nilFunc)
         end
         cls = cls.base
     end
 end
 
---访问属性和方法
-local function __index(table, key)
+---全局访问属性和方法(类)
+function global__index(table, key)
     if key == "base" or key == "__originName" then
         return rawget(table, key)
     end
     local meta = getmetatable(table)
     meta = getmetatable(meta.instance)
-
     --如果当前访问的为事件关键字则先查找是否有对应的事件方法
     if key == "addEvent" or key == "removeEvent" then
         if meta.__eventName ~= nil then
@@ -134,14 +147,14 @@ local function __index(table, key)
     end
     return value
 end
---修改属性和方法
-local function __newindex(table, key, value)
+---全局修改属性和方法(类)
+function global__newindex(table, key, value)
     -- Logger.Log(key)
     if Keywords[key] then
         error(key .. " 是只读属性,不能修改 !!", 2)
     end
 
-    local newType = type(value)
+    local newType = GetTypeName(value)
     if newType ~= "function" then
         if newType == "table" then
             if value.setter == nil and value.gettter == nil then
@@ -265,13 +278,28 @@ local function parseClass(class)
     return fields, attributes, events, functions
 end
 
+-- local function createBase(obj, class, finishClass)
+--     finishClass = finishClass or {}
+--     if class.base then
+--         if finishClass[class.base.ClassName] then
+--             finishClass = nil
+--             error("请检查是否递归继承 ClassName: " .. class.base.ClassName, 2)
+--         end
+--         obj.base = {
+--             __originName = class.base.ClassName
+--         }
+--         finishClass[class.ClassName] = 1
+--         createBase(obj.base, class.base)
+--     end
+-- end
+
 --创建一个心类
 local function newClass(class, ...)
     --obj是一个对象
     checkDefaultFunc(class)
     local obj = {}
     local meta = {instance = obj, class = class}
-    meta.__mode = "kv"
+    meta.__mode = "k"
     obj.__originName = class.ClassName
     local fields, attributes, events, functions = parseClass(class)
     meta.__fields = fields
@@ -284,27 +312,39 @@ local function newClass(class, ...)
     attributes = nil
     events = nil
     functions = nil
-    local finishClass = {}
-    finishClass[class.ClassName] = 1
+    for key, value in pairs(meta.__events) do
+        setmetatable(meta.__events[key], meta)
+    end
+    --createBase(obj, class, meta)
+    -- local finishClass = {}
+    -- local instan, cls = obj, class
+    -- while cls do
+    --     if cls.base then
+    --         instan.base = {
+    --             __originName = cls.base.ClassName
+    --         }
+    --     end
+    --     cls = cls.base
+    --     instan = instan.base
+    -- end
     createBase = function(o, c)
         if c.base then
-            if finishClass[c.base.ClassName] then
-                finishClass = nil
-                error("请检查是否递归继承 ClassName: " .. c.base.ClassName, 2)
-            end
             o.base = {
                 __originName = c.base.ClassName
             }
-            setmetatable(o.base, meta)
             createBase(o.base, c.base)
         end
     end
-    setEventMetaTable(meta)
-    createBase(obj, class)
-    finishClass = nil
+    createBase(obj, class, meta)
+    meta.__index = global__index
+    meta.__newindex = global__newindex
     setmetatable(obj, meta)
-    meta.__index = __index
-    meta.__newindex = __newindex
+    local temp = obj.base
+    while temp do
+        setmetatable(temp, meta)
+        temp = temp.base
+    end
+
     local len = select("#", ...)
     if len == 0 then
         -- 调用无参构造函数
@@ -323,21 +363,15 @@ local function newClass(class, ...)
         end
         obj:ctor(...)
     end
-    -- create = function(c, ...)
-    --     if c.base then
-    --         create(c.base, ...)
-    --     end
-    --     c._ctor(obj, ...)
-    -- end
-    --obj:_ctor(...)
-    -- create(obj, ...)
     obj.__init = true
+    --TempList[obj.InstanceId] = obj
     return obj
 end
 
 ---基类,类似C#的object
----__init 为构造函数
----__delete 为析构函数
+---_ctor 为无参构造函数
+---ctor 为有参构造函数
+---_dtor 为析构函数
 ---@param classname 类名
 ---@param base 父类表
 function BaseClass(classname, base)

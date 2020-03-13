@@ -1,17 +1,15 @@
-local TestPanelView = require "UI.Panel.TestPanel.View.TestPanelView"
+local TestPanelView = require "UI.Panel.View.TestPanelView"
 
 TestPanelView.InitializeElement = function(self)
-    self.name = "cc"
+    
     self.raw_img_aa = self.transform:Find("img_aa"):GetComponent(typeof(Image))
     self.img_aa = self:BindingElement(self.raw_img_aa)
     self.raw_btn_test = self.transform:Find("btn_test"):GetComponent(typeof(Button))
     self.btn_test = self:BindingElement(self.raw_btn_test)
-end
-
-local TestPanel1View = require "UI.Panel.TestPanel1.View.TestPanel1View"
-
-TestPanel1View.InitializeElement = function(self)
-    self.name = "bb"
-    --self.raw_img_aa = self.transform:Find('img_aa'):GetComponent(typeof(Image))
-    --self.raw_btn_test = self.transform:Find('btn_test'):GetComponent(typeof(Button))
+    
+    self.raw_inp_input = self.transform:Find("inp_input"):GetComponent(typeof(InputField))
+    self.inp_input = self:BindingElement(self.raw_inp_input)
+    
+    self.raw_txt_text = self.transform:Find("txt_text"):GetComponent(typeof(Text))
+    self.txt_text = self:BindingElement(self.raw_txt_text)
 end

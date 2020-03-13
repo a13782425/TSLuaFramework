@@ -1,19 +1,18 @@
-local CameraManager = BaseClass("CameraManager",BaseManager)
+local CameraManager = BaseClass("CameraManager", BaseManager)
 
 local function Startup(self)
     self.MainCamObj = GameObject("MainCamera")
     self.MainCamTran = self.MainCamObj.transform
     self.MainCamTran:SetParent(self.transform)
     self.MainCam = self.MainCamObj:AddComponent(typeof(CS.UnityEngine.Camera))
-    self.MainCam.clearFlags = CS.UnityEngine.CameraClearFlags.Nothing
+    self.MainCam.clearFlags = CS.UnityEngine.CameraClearFlags.SolidColor
+    self.MainCam.backgroundColor = Color(0, 0, 0, 1)
     self.MainCam.orthographic = true
     self.MainCam.orthographicSize = 20
 end
 
 local function Dispose(self)
-    
 end
-
 
 CameraManager.Startup = Startup
 CameraManager.Dispose = Dispose
