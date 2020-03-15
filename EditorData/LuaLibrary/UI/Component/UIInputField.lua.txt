@@ -9,7 +9,7 @@ UIInputField.onValueChanged = {
         self._onValueChanged:Remove(luaAction)
     end
 }
-
+UIInputField.DefaultField = 'text'
 ---内容
 UIInputField.text = {
     getter = function(self)
@@ -24,7 +24,7 @@ function UIInputField:ctor(uiview, unity_object)
     local function tempValueChange(value)
         self._onValueChanged:ForEach(
             function(luaAction)
-                luaAction.Func(luaAction.Object, value)
+                luaAction.Func(luaAction.Obj, value)
             end
         )
     end

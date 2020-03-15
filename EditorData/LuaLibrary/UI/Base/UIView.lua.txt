@@ -15,9 +15,18 @@ local UIView = BaseClass("UIView", UIElement)
 
 ---初始化一个界面
 local function initialize(view, uiconfig, parent)
+    if IsNull(uiconfig.PrefabObj) then
+        uiconfig.PrefabObj = ResourcesManager:S_GetInstance():GetAsset(uiconfig.PrefabName)
+    end
     view._gameObject = GameObject.Instantiate(uiconfig.PrefabObj, parent)
     view._transform = view.gameObject.transform
     view._rectTransform = view.gameObject:GetComponent(typeof(RectTransform))
+end
+
+---绑定一个Item到View
+---@param uiitem Item实例
+local function bindingItem(self, uiitem)
+    self._uiElementDic[uiitem.InstanceId] = uiitem
 end
 
 --endregion 私有方法结束
@@ -25,7 +34,7 @@ end
 --region 静态方法开始
 
 ---检测继承是否正确
-local function checkInherit(view)
+local function S_checkInherit(view)
     -- body
     local cls = view
     local res = false
@@ -37,6 +46,26 @@ local function checkInherit(view)
         cls = cls.base
     end
     return res
+end
+
+---创建一个界面
+---@param uiConfig 界面配置<包括Panel和Item>
+---@param parent 生成在哪个节点下面<可为空>
+function UIView.S_CreateView(uiConfig, parent)
+    if S_checkInherit(uiConfig.View) == false then
+        Logger.LogException(uiConfig.View.ClassName .. "不继承自UIView")
+        return
+    end
+    local view = uiConfig.View()
+    initialize(view, uiConfig, parent)
+    view.transform:SetAsLastSibling()
+    view.ViewName = uiConfig.ViewName
+    view:InitializeElement()
+    view:OnCreate()
+    if view.__delete == nil then
+        view:OnEnable()
+    end
+    return view
 end
 
 --endregion 静态方法结束
@@ -87,14 +116,14 @@ end
 
 ---释放时调用函数
 function UIView:Internal_OnDestroy()
+    self.BindingContext:UnbindAll()
+    self._bindingContext = nil
     for key, value in pairs(self._uiElementDic) do
         value:Internal_OnDestroy()
         delete(value)
     end
     self:OnDestroy()
     self._uiElementDic = nil
-    self.BindingContext:UnbindAll()
-    self._bindingContext = nil
 end
 
 --endregion 私有虚方法结束
@@ -121,16 +150,11 @@ end
 
 --region 公共方法开始(不可重写)
 
----绑定一个Item到View
----@param uiitem Item实例
-function UIView:BindingItem(uiitem)
-    self._uiElementDic[uiitem.InstanceId] = uiitem
-end
-
 ---删除一个Item
 function UIView:RemoveItem(item)
     if self._uiElementDic[item.InstanceId] ~= nil then
         table.remove(self._uiElementDic, item.InstanceId)
+        item.Close()
     end
 end
 
@@ -151,35 +175,48 @@ end
 ---@param parent 生成的Item在哪个节点下面<可为空>
 ---@return 创建出来的Item对象
 function UIView:AddSubItem(itemConfig, parent)
-    if checkInherit(itemConfig.View) == false then
+    if S_checkInherit(itemConfig.View) == false then
         Logger.LogException(itemConfig.View.ClassName .. "不继承自UIView")
         return
     end
-    local item = UIView.CreateView(itemConfig, parent)
+    local item = UIView.S_CreateView(itemConfig, parent)
     item.BelongView = self
-    self:bindingItem(item)
+    bindingItem(self, item)
     return item
 end
---endregion 公共方法结束
 
---region 公共静态方法开始
-
----创建一个界面
----@param uiConfig 界面配置<包括Panel和Item>
----@param parent 生成在哪个节点下面<可为空>
-function UIView.CreateView(uiConfig, parent)
-    if checkInherit(uiConfig.View) == false then
-        Logger.LogException(uiConfig.View.ClassName .. "不继承自UIView")
+---添加Item
+---@param itemConfig Item配置
+---@param parent 生成的Item在哪个节点下面<可为空>
+---@param luaAction 创建完成后回调
+function UIView:AddSubItemSync(itemConfig, parent, luaAction)
+    if S_checkInherit(itemConfig.View) == false then
+        Logger.LogException(itemConfig.View.ClassName .. "不继承自UIView")
         return
     end
-    local view = uiConfig.View()
-    initialize(view, uiConfig, parent)
-    view.ViewName = uiConfig.ViewName
-    view:InitializeElement()
-    view:OnCreate()
-    return view
+    if IsNull(itemConfig.PrefabObj) then
+        ResourcesManager:S_GetInstance():GetAssetAsync(
+            itemConfig.PrefabName,
+            function(obj)
+                itemConfig.PrefabObj = obj
+                local item = UIView.S_CreateView(itemConfig, parent)
+                item.BelongView = self
+                bindingItem(self, item)
+                if luaAction then
+                    luaAction.Func(luaAction.Obj, v1)
+                end
+            end
+        )
+    else
+        local item = UIView.S_CreateView(itemConfig, parent)
+        item.BelongView = self
+        bindingItem(self, item)
+        if luaAction then
+            luaAction.Func(luaAction.Obj, v2)
+        end
+    end
 end
 
---endregion 公共静态方法结束
+--endregion 公共方法结束
 
 return UIView

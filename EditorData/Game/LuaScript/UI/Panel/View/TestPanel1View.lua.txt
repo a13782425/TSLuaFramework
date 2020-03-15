@@ -1,0 +1,54 @@
+local TestPanel1View = BaseClass("TestPanel1View", UIPanel)
+
+--属性
+--self.gameObject --游戏物体
+--self.transform --游戏物体的Transform
+--self.rectTransform --游戏物体的RectTransform
+--self.active --激活和隐藏界面请使用该值
+--self.ViewModel --当前界面的ViewModel
+--self.BindingContext --绑定上下文,类型基类为BindingModel
+
+--方法
+--self:AddSubItem(itemConfig,parent) --添加一个Item到parent
+--self:RemoveItem(item) --删除一个Item
+--self:AddComponent(component) --给自己添加一个组件(typeof(Button))
+--self:GetComponent(component) --获取一个组件(typeof(Button))
+--self:SetAsFirstSibling() --设置到当前层级的第一位
+--self:SetAsLastSibling() --设置到当前层级的最后一位
+--self:GetLuaAction(action) --获得一个LuaAction,框架内lua的方法委托都要使用到
+--self:Close() --关闭一个Panel
+
+---界面组件定义开始---self.btn_test
+---self.img_bb
+---self.img_aa
+---界面组件定义结束
+
+---界面所在的层级
+TestPanel1View.Layer = UILayerEnum.Fixed
+
+---创建完成调用
+---整个生命周期只有一次
+function TestPanel1View:OnCreate()
+    --TODO code
+    --数据绑定案例 self.BindingContext:Bind(组件).For(组件字段).To(self.ViewModel.字段).OneWay(); 等等
+end
+
+---当界面激活时调用
+---每次赋值active为true时会调用
+function TestPanel1View:OnEnable()
+    --TODO code
+end
+
+---当界面禁用时调用
+---每次赋值active为false时会调用
+function TestPanel1View:OnDisable()
+    --TODO code
+end
+
+---当界面销毁时调用
+function TestPanel1View:OnDestroy()
+    --TODO code
+    --UIPanel.OnDestroy(self) --调用父类的销毁方法
+end
+
+return TestPanel1View

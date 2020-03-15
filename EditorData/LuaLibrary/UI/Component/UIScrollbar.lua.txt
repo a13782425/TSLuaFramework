@@ -9,6 +9,7 @@ UIScrollbar.onValueChanged = {
         self._onValueChanged:Remove(luaAction)
     end
 }
+UIScrollbar.DefaultField = 'value'
 
 ---Scrollbar的值
 UIScrollbar.value = {
@@ -26,7 +27,7 @@ function UIScrollbar:ctor(uiview, unity_object)
     local function tempValueChange(value)
         self._onValueChanged:ForEach(
             function(luaAction)
-                luaAction.Func(luaAction.Object, value)
+                luaAction.Func(luaAction.Obj, value)
             end
         )
     end

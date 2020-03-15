@@ -1,0 +1,78 @@
+local ResourcesManager = BaseClass("ResourcesManager", BaseManager)
+local AssetBundleModule = nil
+
+-- 启动
+local function Startup(self)
+    AssetBundleModule = CS.TSLuaFramework.Module.AssetBundleModule.Instance
+    AssetBundleModule:SetAssetBundleInfo(App.gameAssetBundlePath)
+end
+
+--- 根据ab名字和资源名字
+local function GetAssetByBundleAsync(self, bundleName, assetName, callBack)
+    AssetBundleModule:LoadAssetAsync(bundleName, assetName, callBack)
+end
+
+--- 根据资源名字加载资源
+local function GetAssetAsync(self, assetName, callBack)
+    self:GetAssetByBundleAsync(nil, assetName, callBack)
+end
+
+--- 根据ab名字和资源名字
+local function GetAssetByBundle(self, bundleName, assetName)
+    return AssetBundleModule:LoadAsset(bundleName, assetName)
+end
+
+--- 根据资源名字加载资源
+local function GetAsset(self, assetName)
+    return self:GetAssetByBundle(nil, assetName)
+end
+
+--- 自动卸载没用到包
+local function AutoUnload(self, unusedTime)
+    AssetBundleModule:AutoUnload(unusedTime)
+end
+---卸载一个AB包
+local function UnloadAssetBundleByName(self, bundleName)
+    AssetBundleModule:UnloadAssetBundleByName(bundleName)
+end
+
+---卸载全部AB包
+local function UnloadAll(self)
+    AssetBundleModule:UnloadAll()
+end
+
+-- 释放
+local function Dispose(self)
+    AssetBundleModule:UnloadAll()
+end
+
+ResourcesManager.Startup = Startup
+ResourcesManager.Dispose = Dispose
+---根据资源名字加载资源
+---@param assetName 资源名
+---@param callback 回调参数为UnityEngine.Object的Fuc
+ResourcesManager.GetAssetAsync = GetAssetAsync
+---根据ab名字和资源名字
+---@param bundleName ab包名
+---@param assetName 资源名
+---@param callback 回调参数为UnityEngine.Object的Fuc
+ResourcesManager.GetAssetByBundleAsync = GetAssetByBundleAsync
+---根据资源名字加载资源
+---@param assetName 资源名
+---@return obj UnityGameObject
+ResourcesManager.GetAsset = GetAsset
+---根据ab名字和资源名字
+---@param bundleName ab包名
+---@param assetName 资源名
+---@return obj UnityGameObject
+ResourcesManager.GetAssetByBundle = GetAssetByBundle
+---自动卸载没用到包<会将已创建的资源也删除>
+---@param unusedTime 自动卸载时间单位秒<负一为不卸载>
+ResourcesManager.AutoUnload = AutoUnload
+---卸载一个AB包
+---@param bundleName 包名
+ResourcesManager.UnloadAssetBundleByName = UnloadAssetBundleByName
+---卸载全部AB包
+ResourcesManager.UnloadAll = UnloadAll
+
+return ResourcesManager

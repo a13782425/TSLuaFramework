@@ -34,9 +34,9 @@ namespace TSLuaFramework
         public static string GetGamePath()
         {
 #if UNITY_EDITOR
-            return $"{Application.dataPath}/../EditorData/Mud";
+            return $"{Application.dataPath}/../EditorData/Game";
 #else
-            return $"{Application.persistentDataPath}/Mud";
+            return $"{Application.persistentDataPath}/Game";
 #endif
         }
 
@@ -48,9 +48,9 @@ namespace TSLuaFramework
         public static string GetLuaScriptPath()
         {
 #if UNITY_EDITOR
-            return $"{Application.dataPath}/../EditorData/Mud/LuaScript";
+            return $"{Application.dataPath}/../EditorData/Game/LuaScript";
 #else
-            return $"{Application.persistentDataPath}/Mud/LuaScript";
+            return $"{Application.persistentDataPath}/Game/LuaScript";
 #endif
         }
 
@@ -62,9 +62,9 @@ namespace TSLuaFramework
         public static string GetGameDataPath()
         {
 #if UNITY_EDITOR
-            return $"{Application.dataPath}/../EditorData/Mud/GameData";
+            return $"{Application.dataPath}/../EditorData/Game/GameData";
 #else
-            return $"{Application.persistentDataPath}/Mud/GameData";
+            return $"{Application.persistentDataPath}/Game/GameData";
 #endif
         }
         /// <summary>
@@ -75,9 +75,9 @@ namespace TSLuaFramework
         public static string GetGameAssetBundlePath()
         {
 #if UNITY_EDITOR
-            return $"{Application.dataPath}/../EditorData/Mud/AssetBundle";
+            return $"{Application.dataPath}/../EditorData/Game/AssetBundle";
 #else
-            return $"{Application.persistentDataPath}/Mud/AssetBundle";
+            return $"{Application.persistentDataPath}/Game/AssetBundle";
 #endif
         }
 

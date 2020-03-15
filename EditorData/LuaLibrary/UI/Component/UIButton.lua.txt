@@ -1,10 +1,10 @@
 local UIButton = BaseClass("UIButton", UIComponent)
 
-local function tempOnClick(self, data)
+local function tempOneClick(self, data)
     if (data.button == PointerEventData.InputButton.Right) then
         self.onRightClickSet:ForEach(
             function(luaAction)
-                luaAction.Func(luaAction.Object, self.gameObject)
+                luaAction.Func(luaAction.Obj, self.gameObject)
             end
         )
     elseif (data.button == PointerEventData.InputButton.Left) then
@@ -12,13 +12,13 @@ local function tempOnClick(self, data)
             --存在双击
             if self._isFirstClick then
                 --已经点击一次
-                self.onDoubleClickSet:ForEach(
-                    function(luaAction)
-                        luaAction.Func(luaAction.Object, self.gameObject)
-                    end
-                )
                 self._isFirstClick = false
                 self._tempTime = 0
+                self.onDoubleClickSet:ForEach(
+                    function(luaAction)
+                        luaAction.Func(luaAction.Obj, self.gameObject)
+                    end
+                )
             else
                 self._isFirstClick = true
                 self._tempTime = 0
@@ -27,24 +27,9 @@ local function tempOnClick(self, data)
             --不存在双击
             self.onClickSet:ForEach(
                 function(luaAction)
-                    luaAction.Func(luaAction.Object, self.gameObject)
+                    luaAction.Func(luaAction.Obj, self.gameObject)
                 end
             )
-        end
-    end
-end
-
-local function update(self)
-    if self._isFirstClick then
-        self._tempTime = self._tempTime + Time.deltaTime
-        if self._tempTime > self.DoubleClickInterval then
-            self.onClickSet:ForEach(
-                function(luaAction)
-                    luaAction.Func(luaAction.Object, self.gameObject)
-                end
-            )
-            self._isFirstClick = false
-            self._tempTime = 0
         end
     end
 end
@@ -77,14 +62,14 @@ UIButton.onDoubleClick = {
         self.onDoubleClickSet:Add(luaAction)
         if self._checkUpdate == false then
             self._checkUpdate = true
-            UpdateManager:GetInstance():AddUpdate(update, self)
+            UpdateManager:S_GetInstance():AddUpdate(self:GetLuaAction(self.Update))
         end
     end,
     removeEvent = function(self, luaAction)
         self.onDoubleClickSet:Remove(luaAction)
         if self._checkUpdate and self.onDoubleClickSet.Count == 0 then
             self._checkUpdate = false
-            UpdateManager:GetInstance():RemoveUpdate(update, self)
+            UpdateManager:S_GetInstance():RemoveUpdate(self:GetLuaAction(self.Update))
         end
     end
 }
@@ -100,15 +85,40 @@ UIButton.onRightClick = {
     end
 }
 
+function UIButton:Update()
+    if self._isFirstClick then
+        self._tempTime = self._tempTime + Time.deltaTime
+        if self._tempTime > self.DoubleClickInterval then
+            self.onClickSet:ForEach(
+                function(luaAction)
+                    luaAction.Func(luaAction.Obj, self.gameObject)
+                end
+            )
+            self._isFirstClick = false
+            self._tempTime = 0
+        end
+    end
+end
+
 function UIButton:ctor(uiview, unity_object)
     UIComponent.ctor(self, uiview, unity_object)
-    self.tempLuaAction = LuaAction(self, tempOnClick)
+    self.tempLuaAction = LuaAction(self, tempOneClick)
     self.onPointerClick:addEvent(self.tempLuaAction)
     self.onClickSet = Set()
     self.onDoubleClickSet = Set()
     self.onRightClickSet = Set()
     self._checkUpdate = false
     self.DoubleClickInterval = 0.2
+end
+
+function UIButton:_dtor()
+    if self._checkUpdate then
+        UpdateManager:S_GetInstance():RemoveUpdate(self:GetLuaAction(self.Update))
+        self._checkUpdate = false
+    end
+    delete(self.onClickSet)
+    delete(self.onDoubleClickSet)
+    delete(self.onRightClickSet)
 end
 
 return UIButton

@@ -30,7 +30,7 @@ namespace XLua
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "AutoUnload", TSLuaFrameworkModuleAssetBundleModule_m_AutoUnload);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "UnloadAll", TSLuaFrameworkModuleAssetBundleModule_m_UnloadAll);
 			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadAsset", TSLuaFrameworkModuleAssetBundleModule_m_LoadAsset);
-			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadAssetByBundleName", TSLuaFrameworkModuleAssetBundleModule_m_LoadAssetByBundleName);
+			Utils.RegisterFunc(L, Utils.METHOD_IDX, "LoadAssetAsync", TSLuaFrameworkModuleAssetBundleModule_m_LoadAssetAsync);
 			
 			
 			
@@ -258,22 +258,36 @@ namespace XLua
             
             TSLuaFramework.Module.AssetBundleModule gen_to_be_invoked = (TSLuaFramework.Module.AssetBundleModule)translator.FastGetCSObj(L, 1);
             
-			
+			if(gen_param_count == 2&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)) 
 			{
 				string _assetName = LuaAPI.lua_tostring(L, 2);
-				System.Action<UnityEngine.Object> _callBack = translator.GetDelegate<System.Action<UnityEngine.Object>>(L, 3);
 				
-				gen_to_be_invoked.LoadAsset( _assetName, _callBack );
+				UnityEngine.Object gen_ret = gen_to_be_invoked.LoadAsset( _assetName );
+				translator.Push(L, gen_ret);
 				
 				
 				
-				return 0;
+				return 1;
+			}
+			if(gen_param_count == 3&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& (LuaAPI.lua_isnil(L, 3) || LuaAPI.lua_type(L, 3) == LuaTypes.LUA_TSTRING)) 
+			{
+				string _bundleName = LuaAPI.lua_tostring(L, 2);
+				string _assetName = LuaAPI.lua_tostring(L, 3);
+				
+				UnityEngine.Object gen_ret = gen_to_be_invoked.LoadAsset( _bundleName, _assetName );
+				translator.Push(L, gen_ret);
+				
+				
+				
+				return 1;
 			}
 			
             
+            return LuaAPI.luaL_error(L, "invalid arguments to TSLuaFramework.Module.AssetBundleModule.LoadAsset!");
+            
         }
         
-        int TSLuaFrameworkModuleAssetBundleModule_m_LoadAssetByBundleName(RealStatePtr L, int gen_param_count) 
+        int TSLuaFrameworkModuleAssetBundleModule_m_LoadAssetAsync(RealStatePtr L, int gen_param_count) 
         {
             
             ObjectTranslator translator = this;
@@ -281,19 +295,32 @@ namespace XLua
             
             TSLuaFramework.Module.AssetBundleModule gen_to_be_invoked = (TSLuaFramework.Module.AssetBundleModule)translator.FastGetCSObj(L, 1);
             
-			
+			if(gen_param_count == 3&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& translator.Assignable<System.Action<UnityEngine.Object>>(L, 3)) 
+			{
+				string _assetName = LuaAPI.lua_tostring(L, 2);
+				System.Action<UnityEngine.Object> _callBack = translator.GetDelegate<System.Action<UnityEngine.Object>>(L, 3);
+				
+				gen_to_be_invoked.LoadAssetAsync( _assetName, _callBack );
+				
+				
+				
+				return 0;
+			}
+			if(gen_param_count == 4&& (LuaAPI.lua_isnil(L, 2) || LuaAPI.lua_type(L, 2) == LuaTypes.LUA_TSTRING)&& (LuaAPI.lua_isnil(L, 3) || LuaAPI.lua_type(L, 3) == LuaTypes.LUA_TSTRING)&& translator.Assignable<System.Action<UnityEngine.Object>>(L, 4)) 
 			{
 				string _bundleName = LuaAPI.lua_tostring(L, 2);
 				string _assetName = LuaAPI.lua_tostring(L, 3);
 				System.Action<UnityEngine.Object> _callBack = translator.GetDelegate<System.Action<UnityEngine.Object>>(L, 4);
 				
-				gen_to_be_invoked.LoadAssetByBundleName( _bundleName, _assetName, _callBack );
+				gen_to_be_invoked.LoadAssetAsync( _bundleName, _assetName, _callBack );
 				
 				
 				
 				return 0;
 			}
 			
+            
+            return LuaAPI.luaL_error(L, "invalid arguments to TSLuaFramework.Module.AssetBundleModule.LoadAssetAsync!");
             
         }
         

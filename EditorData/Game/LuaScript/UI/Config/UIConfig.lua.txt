@@ -1,0 +1,35 @@
+------------------------------------------------------------------------------------------------------------
+-----------------------------------generate file 2020-03-15 14:25:29----------------------------------------
+------------------------------------------------------------------------------------------------------------
+
+local UIConfig = {
+    Panel = {
+        TestPanel = {
+            --页面名称
+            ViewName = 'TestPanel',
+            --页面预制的名称
+            PrefabName = 'testpanel',
+            View = require 'UI.Panel.View.TestPanelView',
+            ViewModel = require 'UI.Panel.ViewModel.TestPanelViewModel',
+        },
+        TestPanel1 = {
+            --页面名称
+            ViewName = 'TestPanel1',
+            --页面预制的名称
+            PrefabName = 'testpanel1',
+            View = require 'UI.Panel.View.TestPanel1View',
+            ViewModel = require 'UI.Panel.ViewModel.TestPanel1ViewModel',
+        },
+    },
+    Item = {
+        TestItem = {
+            --页面名称
+            ViewName = 'TestItem',
+            --页面预制的名称
+            PrefabName = 'testitem',
+            View = require 'UI.Item.View.TestItemView',
+            ViewModel = require 'UI.Item.ViewModel.TestItemViewModel',
+        },
+    }
+}
+return ConstClass('UIConfig', UIConfig);

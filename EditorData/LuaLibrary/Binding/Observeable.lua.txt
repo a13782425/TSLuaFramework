@@ -16,7 +16,7 @@ end
 ---计算数据的值
 local function CalValue(self, oldValue, newValue)
     if self._bindFunc then
-        return self._bindFunc.Func(self._bindFunc.Object, oldValue, newValue)
+        return self._bindFunc.Func(self._bindFunc.Obj, oldValue, newValue)
     else
         return newValue
     end
@@ -24,7 +24,7 @@ end
 ---计算组件Value
 local function CalElementValue(self, value)
     if self._eleFunc then
-        return self._eleFunc.Func(self._eleFunc.Object, value)
+        return self._eleFunc.Func(self._eleFunc.Obj, value)
     else
         return value
     end
@@ -61,8 +61,9 @@ function Observeable:ctor(element)
     end
     self._element = element
     self._component = self.Element.Component
-    self._fieldAction = LuaAction(self, ValueChange)
-    self._eleAction = LuaAction(self, ElementValueChange)
+    self._elePropName = self.DefaultField
+    self._fieldAction = self:GetLuaAction(ValueChange)
+    self._eleAction = self:GetLuaAction(ElementValueChange)
 end
 
 ---析构函数
@@ -80,7 +81,7 @@ end
 ---@param elePropName 组件属性
 ---@param luaAction Func<eleValue,value>绑定方法可为空
 function Observeable:For(elePropName, luaAction)
-    self._elePropName = elePropName
+    self._elePropName = elePropName or self.DefaultField
     if luaAction then
         if IsType(luaAction, LuaAction) == false then
             Logger.LogException("只能绑定LuaAction类型")

@@ -24,6 +24,7 @@ end
 
 -- Update回调
 local function UpdateHandle(self)
+    -- Logger.Log(collectgarbage("count"))
     self.ui_message_center:Broadcast(UpdateMsgName)
 end
 
@@ -40,9 +41,9 @@ end
 -- 启动
 local function Startup(self)
     self:Dispose()
-    self.__update_handle = UpdateBeat:CreateListener(UpdateHandle, UpdateManager:GetInstance())
-    self.__lateupdate_handle = LateUpdateBeat:CreateListener(LateUpdateHandle, UpdateManager:GetInstance())
-    self.__fixedupdate_handle = FixedUpdateBeat:CreateListener(FixedUpdateHandle, UpdateManager:GetInstance())
+    self.__update_handle = UpdateBeat:CreateListener(UpdateHandle, UpdateManager:S_GetInstance())
+    self.__lateupdate_handle = LateUpdateBeat:CreateListener(LateUpdateHandle, UpdateManager:S_GetInstance())
+    self.__fixedupdate_handle = FixedUpdateBeat:CreateListener(FixedUpdateHandle, UpdateManager:S_GetInstance())
     UpdateBeat:AddListener(self.__update_handle)
     LateUpdateBeat:AddListener(self.__lateupdate_handle)
     FixedUpdateBeat:AddListener(self.__fixedupdate_handle)
@@ -69,33 +70,33 @@ local function Cleanup(self)
 end
 
 -- 添加Update更新
-local function AddUpdate(self, e_listener, ...)
-    self.ui_message_center:AddListener(UpdateMsgName, e_listener, ...)
+local function AddUpdate(self, e_luaAction, ...)
+    self.ui_message_center:AddListener(UpdateMsgName, e_luaAction, ...)
 end
 
 -- 添加LateUpdate更新
-local function AddLateUpdate(self, e_listener, ...)
-    self.ui_message_center:AddListener(LateUpdateMsgName, e_listener, ...)
+local function AddLateUpdate(self, e_luaAction, ...)
+    self.ui_message_center:AddListener(LateUpdateMsgName, e_luaAction, ...)
 end
 
 -- 添加FixedUpdate更新
-local function AddFixedUpdate(self, e_listener, ...)
-    self.ui_message_center:AddListener(FixedUpdateMsgName, e_listener, ...)
+local function AddFixedUpdate(self, e_luaAction, ...)
+    self.ui_message_center:AddListener(FixedUpdateMsgName, e_luaAction, ...)
 end
 
 -- 移除Update更新
-local function RemoveUpdate(self, e_listener)
-    self.ui_message_center:RemoveListener(UpdateMsgName, e_listener)
+local function RemoveUpdate(self, e_luaAction)
+    self.ui_message_center:RemoveListener(UpdateMsgName, e_luaAction)
 end
 
 -- 移除LateUpdate更新
-local function RemoveLateUpdate(self, e_listener)
-    self.ui_message_center:RemoveListener(LateUpdateMsgName, e_listener)
+local function RemoveLateUpdate(self, e_luaAction)
+    self.ui_message_center:RemoveListener(LateUpdateMsgName, e_luaAction)
 end
 
 -- 移除FixedUpdate更新
-local function RemoveFixedUpdate(self, e_listener)
-    self.ui_message_center:RemoveListener(FixedUpdateMsgName, e_listener)
+local function RemoveFixedUpdate(self, e_luaAction)
+    self.ui_message_center:RemoveListener(FixedUpdateMsgName, e_luaAction)
 end
 
 -- 析构函数

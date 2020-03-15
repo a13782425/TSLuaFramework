@@ -1,6 +1,6 @@
 local LuaAction = BaseClass("LuaAction")
 
-LuaAction.Object = {
+LuaAction.Obj = {
     getter = function(self)
         return self._obj
     end

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a1860e476786a64b9b44a57be28d1bf, type: 3}
+  m_Name: Config
+  m_EditorClassIdentifier: 
+  ViewTemplate: {fileID: 4900000, guid: 1cea6a1c5f2ba864e8d96ef929654a20, type: 3}
+  ModelTemplate: {fileID: 4900000, guid: 4a69da234a608d64685cf52f85354565, type: 3}
+  PanelPath: D:/Git/TSLuaFramework/Assets/Prefab/UI/Panel
+  ItemPath: D:/Git/TSLuaFramework/Assets/Prefab/UI/Item
+  ViewConfigPath: D:/Git/TSLuaFramework/EditorData/Game/LuaScript/UI/Config
+  ViewCreatorPath: D:/Git/TSLuaFramework/EditorData/Game/LuaScript/UI/Config
+  PanelScriptPath: D:/Git/TSLuaFramework/EditorData/Game/LuaScript/UI/Panel/View
+  ItemScriptPath: D:/Git/TSLuaFramework/EditorData/Game/LuaScript/UI/Item/View
+  PanelViewModelPath: D:/Git/TSLuaFramework/EditorData/Game/LuaScript/UI/Panel/ViewModel
+  ItemViewModelPath: D:/Git/TSLuaFramework/EditorData/Game/LuaScript/UI/Item/ViewModel

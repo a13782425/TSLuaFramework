@@ -1,0 +1,78 @@
+-- 全局模块
+require "Global.Global"
+--require "Common.Class.BaseClass"
+
+-- 定义为全局模块，整个lua程序的入口类
+GameMain = {}
+
+-- local Test = BaseClass("Test", Test1)
+-- Test.prop = {
+--     --set访问器
+--     setter = function(self, value)
+--         self._prop = value
+--     end,
+--     --get访问器
+--     getter = function(self)
+--         return self._prop
+--     end
+-- }
+
+-- function Test:_ctor()
+--     Logger.Log("父类构造函数")
+-- end
+
+-- function Test:Abc()
+--     Logger.Log("我是父类" .. self.ClassName)
+--     self.prop1 = "ccc"
+-- end
+-- function Test:_dtor()
+--     Logger.Log("父类析构函数")
+-- end
+-- local Test1 = BaseClass("Test1", Test)
+-- Test.prop1 = {
+--     --set访问器
+--     setter = function(self, value)
+--         self._prop1 = value
+--     end,
+--     --get访问器
+--     getter = function(self)
+--         return self._prop1
+--     end
+-- }
+-- function Test1:_ctor()
+--     Logger.Log("子类构造函数")
+--     self.prop = "fff"
+-- end
+-- function Test1:_dtor()
+--     Logger.Log("子类析构函数")
+-- end
+-- function Test1:Abc()
+--     Logger.Log("我是子类" .. self.ClassName)
+-- end
+
+local function Start()
+    Logger.Log("GameMain start...")
+
+    -- 模块启动
+    CameraManager:S_GetInstance():Startup()
+    UpdateManager:S_GetInstance():Startup()
+    TimerManager:S_GetInstance():Startup()
+    ResourcesManager:S_GetInstance():Startup()
+    UIManager:S_GetInstance():Startup()
+    UIManager:S_GetInstance():ShowPanel(UIConfig.Panel.TestPanel)
+end
+
+local function OnApplicationQuit()
+    Logger.Log("GameMain end...")
+    --释放模块
+    UIManager:S_GetInstance():Dispose()
+    ResourcesManager:S_GetInstance():Dispose()
+    TimerManager:S_GetInstance():Dispose()
+    UpdateManager:S_GetInstance():Dispose()
+    CameraManager:S_GetInstance():Dispose()
+end
+
+GameMain.Start = Start
+GameMain.OnApplicationQuit = OnApplicationQuit
+
+return GameMain

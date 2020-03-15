@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 9172919688419683819}
   m_Layer: 5
   m_Name: txt_text
-  m_TagString: Untagged
+  m_TagString: Export
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -154,6 +154,41 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: New Text
+--- !u!1 &3792152877095478323
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3538465016793853201}
+  m_Layer: 5
+  m_Name: tran_content
+  m_TagString: Export
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3538465016793853201
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3792152877095478323}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6166817529892340926}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 329, y: 156.2}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4737413605850826966
 GameObject:
   m_ObjectHideFlags: 0
@@ -167,7 +202,7 @@ GameObject:
   - component: {fileID: 5009488382307962383}
   m_Layer: 5
   m_Name: img_bb
-  m_TagString: Untagged
+  m_TagString: Export
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -338,6 +373,7 @@ RectTransform:
   - {fileID: 6811924482006175256}
   - {fileID: 2290537939036249996}
   - {fileID: 7466253116025713733}
+  - {fileID: 3538465016793853201}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -396,7 +432,7 @@ GameObject:
   - component: {fileID: 5437054166771141856}
   m_Layer: 5
   m_Name: inp_input
-  m_TagString: Untagged
+  m_TagString: Export
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -612,7 +648,7 @@ GameObject:
   - component: {fileID: 786369449941126943}
   m_Layer: 5
   m_Name: btn_test
-  m_TagString: Untagged
+  m_TagString: Export
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -729,7 +765,7 @@ GameObject:
   - component: {fileID: 1489202663988429546}
   m_Layer: 5
   m_Name: img_aa
-  m_TagString: Untagged
+  m_TagString: Export
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

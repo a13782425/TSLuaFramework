@@ -1,11 +1,11 @@
 --[[
 -- Lua面向对象设计
 --]]
---保存类类型的虚表
-local _class = {}
+-- --保存类类型的虚表
+-- local _class = {}
 
 --已经定义过的类
-local classList = {}
+local _classList = {}
 
 ---自定义类型
 ClassType = {
@@ -18,6 +18,7 @@ Keywords = {
     __index = 1,
     __newindex = 1,
     __originName = 1,
+    __delete = 1,
     ClassType = 1,
     ClassName = 1,
     base = 1,
@@ -29,7 +30,7 @@ Keywords = {
 --TempList = {}
 
 ---所有类的基类
-local Object = {
+LuaObject = {
     base = nil,
     ---类名
     ClassName = "Object",
@@ -46,22 +47,41 @@ local Object = {
         if self._instanceId == nil then
             self._instanceId = CS.TSLuaFramework.Tool.GameTool.GetInstanceId()
         end
+        self._luaActions = {}
     end,
     ---析构函数
     _dtor = function(self)
         if self.InstanceId then
             CS.TSLuaFramework.Tool.GameTool.RecoverInstanceId(self.InstanceId)
         end
+        for key, value in pairs(self._luaActions) do
+            delete(value)
+        end
+        self._luaActions = nil
     end,
     ---设置原方法
-    _setMetaFunc = function(self, funcName, func)
+    __setMetaFunc = function(self, funcName, func)
         if type(func) ~= "function" then
             error("传入的func参数错误", 2)
         end
         local meta = getmetatable(self)
         meta[funcName] = func
+    end,
+    ---获取一个LuaAction
+    ---@param action 方法
+    ---@return LuaAction
+    GetLuaAction = function(self, action)
+        local luaAction = self._luaActions[action]
+        if luaAction then
+            return luaAction
+        else
+            luaAction = LuaAction(self, action)
+            self._luaActions[action] = luaAction
+            return luaAction
+        end
     end
 }
+_classList["LuaObject"] = LuaObject
 ---验证默认方法是否存在
 local function checkDefaultFunc(class)
     local cls = class
@@ -278,21 +298,6 @@ local function parseClass(class)
     return fields, attributes, events, functions
 end
 
--- local function createBase(obj, class, finishClass)
---     finishClass = finishClass or {}
---     if class.base then
---         if finishClass[class.base.ClassName] then
---             finishClass = nil
---             error("请检查是否递归继承 ClassName: " .. class.base.ClassName, 2)
---         end
---         obj.base = {
---             __originName = class.base.ClassName
---         }
---         finishClass[class.ClassName] = 1
---         createBase(obj.base, class.base)
---     end
--- end
-
 --创建一个心类
 local function newClass(class, ...)
     --obj是一个对象
@@ -361,6 +366,7 @@ local function newClass(class, ...)
         if obj.ctor == nil then
             Logger.LogException("类:" .. class.ClassName .. "不存在有参构造函数")
         end
+        LuaObject._ctor(obj)
         obj:ctor(...)
     end
     obj.__init = true
@@ -376,18 +382,18 @@ end
 ---@param base 父类表
 function BaseClass(classname, base)
     assert(type(classname) == "string" and #classname > 0)
-    assert(classList[classname] == nil, '"' .. tostring(classname) .. '" 重复定义!!')
+    assert(_classList[classname] == nil, '"' .. tostring(classname) .. '" 重复定义!!')
     local clsSource = {}
     --基类
     local baseClass = {}
     --当有父类
     if base then
-        baseClass = classList[base.ClassName]
+        baseClass = _classList[base.ClassName]
         if baseClass == nil then
             error('"' .. tostring(base.ClassName) .. '" 父类不存在!!', 2)
         end
     else
-        baseClass = Object
+        baseClass = LuaObject
     end
     local vtbl = {}
     setmetatable(
@@ -414,9 +420,20 @@ function BaseClass(classname, base)
     clsSource.ClassType = ClassType.class
     clsSource.__init = false
     clsSource.__delete = false
-    classList[classname] = clsSource
+    _classList[classname] = clsSource
 
     return clsSource
+end
+
+local function del(ins, c)
+    -- if IsType(class, UIElement) then
+    --     Logger.LogWarning(class.ClassName)
+    --     Logger.LogWarning(c)
+    -- end
+    c._dtor(ins)
+    if c.base then
+        del(ins, c.base)
+    end
 end
 
 ---删除一个实例,调用完方法请执行 class = nil
@@ -425,13 +442,8 @@ function delete(class)
     if (class.ClassType ~= ClassType.instance) then
         error("要删除的不是一个实例")
     end
-    del = function(c, ...)
-        c._dtor(class, ...)
-        if c.base then
-            del(c.base, ...)
-        end
-    end
-    del(class)
+
+    del(class, class)
     local meta = getmetatable(class)
     meta.__fields = nil
     meta.__attributes = nil
@@ -445,5 +457,6 @@ function delete(class)
     meta.__newindex = function()
         error("你正在访问一个删除的对象")
     end
+    rawset(class, "__delete", true)
     class = nil
 end

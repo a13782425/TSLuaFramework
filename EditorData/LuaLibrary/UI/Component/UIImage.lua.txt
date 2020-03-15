@@ -8,6 +8,7 @@ UIImage.sprite = {
         self.Component.sprite = value
     end
 }
+UIImage.DefaultField = 'sprite'
 
 UIImage.fillAmount = {
     getter = function(self)

@@ -10,6 +10,8 @@ UIDropdown.onValueChanged = {
     end
 }
 
+UIDropdown.DefaultField = 'value'
+
 ---下拉菜单的值
 UIDropdown.value = {
     getter = function(self)
@@ -26,7 +28,7 @@ function UIDropdown:ctor(uiview, unity_object)
     local function tempValueChange(value)
         self._onValueChanged:ForEach(
             function(luaAction)
-                luaAction.Func(luaAction.Object, value)
+                luaAction.Func(luaAction.Obj, value)
             end
         )
     end

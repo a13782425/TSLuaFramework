@@ -26,6 +26,8 @@ UIComponent.Component = {
     end
 }
 
+UIComponent.DefaultField = nil
+
 function UIComponent:ctor(uiview, unity_object)
     self._belongView = uiview
     self._component = unity_object

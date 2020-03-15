@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace TSLuaFramework.Editor
 {
-    public sealed class UIDesPanelEditor : EditorWindow
+    sealed class UIDesPanelEditor : EditorWindow
     {
         [MenuItem("TSFrame/UI/帮助", false, 100)]
         public static void OpenWindow()
@@ -21,7 +21,7 @@ namespace TSLuaFramework.Editor
         {
             EditorGUILayout.BeginVertical();
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField(UIEditorUtils.UITemplate_Ref.UIDescription.text, new GUIStyle() { fontSize = 20 });
+            //EditorGUILayout.LabelField(UIEditorUtils.UITemplate_Ref.UIDescription.text, new GUIStyle() { fontSize = 20 });
             EditorGUILayout.EndVertical();
 
         }

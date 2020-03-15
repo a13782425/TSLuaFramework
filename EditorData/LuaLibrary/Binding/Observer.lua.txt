@@ -33,6 +33,16 @@ function Observer:_ctor()
     self._bindSet = Set()
 end
 
+function Observer:_dtor()
+    self:UnbindAll()
+    self._bindSet:ForEach(
+        function(item)
+            delete(item)
+        end
+    )
+    self._bindSet = nil
+end
+
 ---绑定数据
 ---@param game_obj 绑定的游戏物体
 ---@return 返回一个可观察的对象Observeable

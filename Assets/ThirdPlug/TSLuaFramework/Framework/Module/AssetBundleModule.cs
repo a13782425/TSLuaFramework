@@ -54,31 +54,6 @@ namespace TSLuaFramework.Module
 
         public override void Update(float deltaTime)
         {
-            if (_waitParseABPaths != null)
-            {
-                if (_waitParseABPaths.Count > 0)
-                {
-                    string abPath = _waitParseABPaths.Dequeue();
-                    if (abPath != null)
-                    {
-                        string catalogContent = FileTool.ReadFile(CATALOG_FILE_NAME, abPath);
-                        AssetBundleDto assetBundleDto = JsonConvert.DeserializeObject<AssetBundleDto>(catalogContent);
-                        assetBundleDto.AssetBundlePath = abPath;
-                        _alreadyParseABList.Add(assetBundleDto);
-                    }
-                }
-            }
-            if (_handles != null)
-            {
-                if (_handles.Count > 0)
-                {
-                    var handle = _handles.Dequeue();
-                    if (handle != null)
-                    {
-                        handle.Run();
-                    }
-                }
-            }
             if (_unloadSecond > 0 && _unloadCheckTime > 1)
             {
                 //自动检测回收资源
@@ -106,7 +81,7 @@ namespace TSLuaFramework.Module
         {
             foreach (var item in _alreadyParseABList)
             {
-                item.UnloadAssetBundleByName(bundleName);
+                item.UnloadAssetBundle(bundleName);
             }
         }
 
@@ -127,7 +102,13 @@ namespace TSLuaFramework.Module
                 GameApp.Instance.LogWarning($"{abPath}路径下的ab包被重复加载");
                 return this;
             }
-            _waitParseABPaths.Enqueue(abPath);
+            if (abPath != null)
+            {
+                string catalogContent = FileTool.ReadFile(CATALOG_FILE_NAME, abPath);
+                AssetBundleDto assetBundleDto = JsonConvert.DeserializeObject<AssetBundleDto>(catalogContent);
+                assetBundleDto.AssetBundlePath = abPath;
+                _alreadyParseABList.Add(assetBundleDto);
+            }
             return this;
         }
         /// <summary>
@@ -165,34 +146,54 @@ namespace TSLuaFramework.Module
                 item.UnLoadAllAB(true);
             }
         }
+
+
         /// <summary>
-        /// 根据资源名字加载资源
+        /// 根据资源名字同步加载资源
         /// </summary>
         /// <param name="assetName"></param>
         /// <returns></returns>
-        public void LoadAsset(string assetName, Action<Object> callBack)
+        public Object LoadAsset(string assetName)
         {
-            LoadAssetByBundleName(null, assetName, callBack);
+            return LoadAsset(null, assetName);
         }
 
         /// <summary>
-        /// 根据ab名字和资源名字
+        /// 根据ab名字和资源名字同步加载
         /// </summary>
         /// <param name="bundleName"></param>
         /// <param name="assetName"></param>
         /// <returns></returns>
-        public void LoadAssetByBundleName(string bundleName, string assetName, Action<Object> callBack)
+        public Object LoadAsset(string bundleName, string assetName)
         {
-            AsyncOperationHandle asyncOperation = new AsyncOperationHandle(_counter, bundleName, assetName);
-            if (_counter == int.MaxValue)
-            {
-                _counter = int.MinValue;
-            }
-            _counter++;
-            asyncOperation.Completed += AsyncOperation_Completed;
-            asyncOperation.Completed += callBack;
-            _handles.Enqueue(asyncOperation);
+            return GetAsset(bundleName, assetName);
         }
+
+        /// <summary>
+        /// 根据资源名字异步加载资源
+        /// </summary>
+        /// <param name="assetName"></param>
+        /// <returns></returns>
+        public void LoadAssetAsync(string assetName, Action<Object> callBack)
+        {
+            LoadAssetAsync(null, assetName, callBack);
+        }
+
+        /// <summary>
+        /// 根据ab名字和资源名字异步加载
+        /// </summary>
+        /// <param name="bundleName"></param>
+        /// <param name="assetName"></param>
+        /// <returns></returns>
+        public void LoadAssetAsync(string bundleName, string assetName, Action<Object> callBack)
+        {
+            AsyncOperationHandle asyncOperationHandle = new AsyncOperationHandle(bundleName, assetName);
+            asyncOperationHandle.Completed += AsyncOperation_Completed;
+            asyncOperationHandle.Completed += callBack;
+            StartCoroutine(GetAssetAsync(bundleName, assetName, asyncOperationHandle));
+        }
+
+
 
         /// <summary>
         /// 加载完成回调
@@ -209,7 +210,7 @@ namespace TSLuaFramework.Module
         /// <param name="bundlePath"></param>
         /// <param name="assetName"></param>
         /// <returns></returns>
-        internal async Task<Object> GetAsset(string bundlePath, string assetName)
+        internal Object GetAsset(string bundlePath, string assetName)
         {
             if (string.IsNullOrWhiteSpace(assetName))
             {
@@ -222,14 +223,14 @@ namespace TSLuaFramework.Module
             }
             bundlePath = bundlePath.ToLower();
             assetName = assetName.ToLower();
-            Object obj = null;
             if (_alreadyParseABList.Count == 0)
             {
                 Log.LogWarning("没有设置任何AssetBundle的路径");
             }
+            Object obj = null;
             foreach (var item in _alreadyParseABList)
             {
-                obj = await item.GetAsset(bundlePath, assetName);
+                obj = item.GetAsset(bundlePath, assetName);
                 if (obj != null)
                 {
                     break;
@@ -238,41 +239,62 @@ namespace TSLuaFramework.Module
             return obj;
         }
 
-        private class AsyncOperationHandle : IEquatable<AsyncOperationHandle>
+        /// <summary>
+        /// 获取一个资源
+        /// </summary>
+        /// <param name="bundlePath"></param>
+        /// <param name="assetName"></param>
+        /// <returns></returns>
+        internal IEnumerator GetAssetAsync(string bundlePath, string assetName, AsyncOperationHandle handle)
         {
-            public Object Result { get; internal set; }
-            public string BundleName { get; private set; }
-            public string AssetName { get; private set; }
-
-            public event Action<Object> Completed;
-
-            internal int Version { get; private set; }
-            public bool Equals(AsyncOperationHandle other)
+            if (string.IsNullOrWhiteSpace(assetName))
             {
-                return Version == other.Version;
+                Debug.LogError("资源名为空!");
+                yield break;
             }
-
-            internal async void Run()
+            if (string.IsNullOrWhiteSpace(bundlePath))
             {
-                //Task = Task<Object>.Factory.StartNew(LoadObject);
-                Object obj = null;
-                obj = await AssetBundleModule.Instance.GetAsset(BundleName, AssetName);
-
-                Result = obj;
-                await new WaitForUnityThread();
-                if (Completed != null)
+                bundlePath = "";
+            }
+            bundlePath = bundlePath.ToLower();
+            assetName = assetName.ToLower();
+            if (_alreadyParseABList.Count == 0)
+            {
+                Log.LogWarning("没有设置任何AssetBundle的路径");
+            }
+            foreach (var item in _alreadyParseABList)
+            {
+                yield return StartCoroutine(item.GetAssetAsync(bundlePath, assetName, handle));
+                if (handle.Result != null)
                 {
-                    Completed.Invoke(Result);
+                    break;
                 }
             }
+            handle.Invoke();
+        }
 
-            internal AsyncOperationHandle(int version, string bundleName, string assetName)
+        internal class AsyncOperationHandle
+        {
+            public string BundleName { get; private set; }
+            public string AssetName { get; private set; }
+            public Object Result;
+
+            public event Action<Object> Completed;
+            internal AsyncOperationHandle(string bundleName, string assetName)
             {
-                Version = version;
-                Result = default(Object);
                 BundleName = bundleName;
                 AssetName = assetName;
                 Completed = null;
+                Result = null;
+
+            }
+
+            internal void Invoke()
+            {
+                if (Completed != null && Result != null)
+                {
+                    Completed.Invoke(Result);
+                }
             }
         }
     }

@@ -16,7 +16,7 @@ local function Startup(self)
 end
 
 -- 不要重写
-local function GetInstance(self)
+local function S_GetInstance(self)
 	if self.Instance == nil then
 		self.Instance = self();
 	end
@@ -26,7 +26,7 @@ end
 Singleton._ctor = _ctor
 Singleton._dtor = _dtor
 Singleton.Startup = Startup
-Singleton.GetInstance = GetInstance
+Singleton.S_GetInstance = S_GetInstance
 Singleton.Destory = Destory
 
 return Singleton

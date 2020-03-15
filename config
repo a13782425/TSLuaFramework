@@ -4,17 +4,17 @@ Placeholder=0
 
 ; UI,Asset文件夹下的路径，UI只能在Resources下面，例如在Asset/Resources/UI下面，只需要填写Resources/UI
 [UI]
-PanelPath=
-ItemPath=
+PanelPath=Prefab/UI/Panel
+ItemPath=Prefab/UI/Item
 
 ;UI脚本,Asset文件夹下的路径，例如在Asset/Script/Code下面，只需要填写Script/Code
 [UIScript]
-PanelGeneratedScriptPath=
-ItemGeneratedScriptPath=
-PanelScriptPath=
-ItemScriptPath=
-PanelViewModelPath=
-ItemViewModelPath=
+ViewConfigFile=../EditorData/Game/LuaScript/UI/Config/UIConfig.lua.txt
+ViewCreatorFile=../EditorData/Game/LuaScript/UI/Config/UICreator.lua.txt
+PanelScriptPath=../EditorData/Game/LuaScript/UI/Panel/View
+ItemScriptPath=../EditorData/Game/LuaScript/UI/Item/View
+PanelViewModelPath=../EditorData/Game/LuaScript/UI/Panel/ViewModel
+ItemViewModelPath=../EditorData/Game/LuaScript/UI/Item/ViewModel
 
 ;导出游戏物体名称前缀对应的类型，慎重修改
 [UIExport]

@@ -10,6 +10,8 @@ UIToggle.onValueChanged = {
     end
 }
 
+UIToggle.DefaultField = 'isOn'
+
 ---切换按钮的值
 UIToggle.isOn = {
     getter = function(self)
@@ -35,7 +37,7 @@ function UIToggle:ctor(uiview, unity_object)
     local function tempValueChange(value)
         self._onValueChanged:ForEach(
             function(luaAction)
-                luaAction.Func(luaAction.Object, value)
+                luaAction.Func(luaAction.Obj, value)
             end
         )
     end

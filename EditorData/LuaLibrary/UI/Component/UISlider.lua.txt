@@ -9,7 +9,7 @@ UISlider.onValueChanged = {
         self._onValueChanged:Remove(luaAction)
     end
 }
-
+UISlider.DefaultField = 'value'
 ---拖拽条的值
 UISlider.value = {
     getter = function(self)
@@ -26,7 +26,7 @@ function UISlider:ctor(uiview, unity_object)
     local function tempValueChange(value)
         self._onValueChanged:ForEach(
             function(luaAction)
-                luaAction.Func(luaAction.Object, value)
+                luaAction.Func(luaAction.Obj, value)
             end
         )
     end

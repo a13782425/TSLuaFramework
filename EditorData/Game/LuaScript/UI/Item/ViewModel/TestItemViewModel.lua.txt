@@ -1,0 +1,12 @@
+local TestItemViewModel = BaseClass("TestItemViewModel",BindingModel);
+
+---初始化数据
+function TestItemViewModel:Initlialize()
+	--例如self.字段名 = BindableProperty(字段名);
+end
+
+---释放数据
+function TestItemViewModel:Dispose()
+end
+
+return TestItemViewModel

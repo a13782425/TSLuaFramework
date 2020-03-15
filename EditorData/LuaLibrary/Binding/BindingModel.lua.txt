@@ -20,31 +20,12 @@ local function __newindex(table, key, value)
 end
 
 local function ctor(self, view)
-    BindingModel.base._ctor(self)
-    self._luaActions = {}
-    self:_setMetaFunc("__newindex", __newindex)
+    self:__setMetaFunc("__newindex", __newindex)
     self.View = view
     self:Initlialize()
 end
 local function _dtor(self)
-    for key, value in pairs(self._luaActions) do
-        delete(value)
-    end
-    self._luaActions = nil
-end
-
----获得一个LuaAction
----@param action 方法
----@return LuaAction
-function BindingModel:GetLuaAction(action)
-    local luaAction = self._luaActions[action]
-    if luaAction then
-        return luaAction
-    else
-        luaAction = LuaAction(self, action)
-        self._luaActions[action] = luaAction
-        return luaAction
-    end
+    
 end
 
 ---初始化

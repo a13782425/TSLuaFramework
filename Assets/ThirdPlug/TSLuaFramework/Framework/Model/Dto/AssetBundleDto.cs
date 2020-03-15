@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using static TSLuaFramework.Module.AssetBundleModule;
 using Object = UnityEngine.Object;
 
 namespace TSLuaFramework.Model
@@ -35,43 +37,6 @@ namespace TSLuaFramework.Model
         private Dictionary<string, AssetBundle> _alreadyLoadDic = new Dictionary<string, AssetBundle>();
 
         /// <summary>
-        /// 根据资源名获取一个资源
-        /// </summary>
-        /// <param name="assetName"></param>
-        /// <returns></returns>
-        internal async Task<Object> GetAsset(string assetName)
-        {
-            return await GetAsset(null, assetName);
-        }
-
-        /// <summary>
-        /// 根据ab包和资源名获取一个资源
-        /// </summary>
-        /// <param name="bundleName"></param>
-        /// <param name="assetName"></param>
-        /// <returns></returns>
-        internal async Task<Object> GetAsset(string bundleName, string assetName)
-        {
-            if (string.IsNullOrWhiteSpace(bundleName))
-            {
-                var assetInfoDto = AssetInfoDtoList.FirstOrDefault(a => a.AssetName == assetName);
-                if (assetInfoDto != null)
-                {
-                    bundleName = assetInfoDto.AssetBundleName;
-                }
-                else
-                {
-                    Debug.LogError($"没有找到资源:{assetName}对应的包名");
-                    return null;
-                }
-            }
-
-            AssetBundle assetBundle = await GetAssetBundle(bundleName);
-            await new WaitForUnityThread();
-            return assetBundle.LoadAsset(assetName);
-        }
-
-        /// <summary>
         /// 卸载该路径包
         /// </summary>
         /// <param name="unloadAllObjects"></param>
@@ -92,96 +57,126 @@ namespace TSLuaFramework.Model
                 goto Begin;
             }
         }
-
-
+        private AssetBundleInfoDto GetBundleInfoDto(string bundleName)
+        {
+            return AssetBundleInfoDtoList.FirstOrDefault(a => a.AssetBundleName == bundleName);
+        }
         /// <summary>
         /// 检查各个AB包使用时间
         /// </summary>
-        internal async void CheckAssetBundleUseTime(int unusedTime)
+        internal void CheckAssetBundleUseTime(int unusedTime)
         {
-            Begin: if (Interlocked.CompareExchange(ref _currentLock, TRUE, FALSE) == FALSE)
+            DateTime dateTime = DateTime.Now;
+            foreach (var item in AssetBundleInfoDtoList)
             {
-                DateTime dateTime = DateTime.Now;
-                foreach (var item in AssetBundleInfoDtoList)
+                int temp = (int)((dateTime - item.LastUseTime).TotalSeconds);
+                if (temp > unusedTime)
                 {
-                    int temp = (int)((dateTime - item.LastUseTime).TotalSeconds);
-                    if (temp > unusedTime)
+                    if (_alreadyLoadDic.ContainsKey(item.AssetBundleName))
                     {
-                        if (_alreadyLoadDic.ContainsKey(item.AssetBundleName))
-                        {
 
-                            await new WaitForUnityThread();
-                            _alreadyLoadDic[item.AssetBundleName].Unload(true);
-                            _alreadyLoadDic.Remove(item.AssetBundleName);
-                        }
+                        _alreadyLoadDic[item.AssetBundleName].Unload(true);
+                        _alreadyLoadDic.Remove(item.AssetBundleName);
                     }
                 }
-                Interlocked.Exchange(ref _currentLock, FALSE);
-            }
-            else
-            {
-                Thread.Sleep(100);
-                goto Begin;
             }
         }
         /// <summary>
         /// 卸载一个AB包
         /// </summary>
-        internal async void UnloadAssetBundleByName(string bundleName)
+        internal void UnloadAssetBundle(string bundleName)
         {
-            Begin: if (Interlocked.CompareExchange(ref _currentLock, TRUE, FALSE) == FALSE)
+            if (_alreadyLoadDic.ContainsKey(bundleName))
             {
-                if (_alreadyLoadDic.ContainsKey(bundleName))
+                _alreadyLoadDic[bundleName].Unload(true);
+                _alreadyLoadDic.Remove(bundleName);
+            }
+        }
+        internal Object GetAsset(string assetName)
+        {
+            return GetAsset(null, assetName);
+        }
+        internal Object GetAsset(string bundleName, string assetName)
+        {
+            if (string.IsNullOrWhiteSpace(bundleName))
+            {
+                var assetInfoDto = AssetInfoDtoList.FirstOrDefault(a => a.AssetName == assetName);
+                if (assetInfoDto != null)
                 {
-                    await new WaitForUnityThread();
-                    _alreadyLoadDic[bundleName].Unload(true);
-                    _alreadyLoadDic.Remove(bundleName);
+                    bundleName = assetInfoDto.AssetBundleName;
                 }
-                Interlocked.Exchange(ref _currentLock, FALSE);
+                else
+                {
+                    Debug.LogError($"没有找到资源:{assetName}对应的包名");
+                    return null;
+                }
             }
-            else
+            AssetBundleInfoDto bundleInfoDto = GetBundleInfoDto(bundleName);
+            if (!_alreadyLoadDic.ContainsKey(bundleName))
             {
-                Thread.Sleep(100);
-                goto Begin;
+                if (bundleInfoDto != null)
+                {
+                    LoadAssetBundle(bundleInfoDto);
+                }
+                else
+                {
+                    Debug.LogError($"没有找到资源:{bundleName}包");
+                    return null;
+                }
             }
+
+            AssetBundle assetBundle = _alreadyLoadDic[bundleName];
+            return assetBundle.LoadAsset(assetName);
+        }
+        internal IEnumerator GetAssetAsync(string assetName, AsyncOperationHandle handle)
+        {
+            yield return GameApp.Instance.StartCoroutine(GetAssetAsync(null, assetName, handle));
         }
 
-        private async Task<AssetBundle> GetAssetBundle(string bundleName)
+        /// <summary>
+        /// 根据ab包和资源名获取一个资源
+        /// </summary>
+        /// <param name="bundleName"></param>
+        /// <param name="assetName"></param>
+        /// <returns></returns>
+        internal IEnumerator GetAssetAsync(string bundleName, string assetName, AsyncOperationHandle handle)
         {
-            Begin: if (Interlocked.CompareExchange(ref _currentLock, TRUE, FALSE) == FALSE)
+            if (string.IsNullOrWhiteSpace(bundleName))
             {
-                AssetBundleInfoDto bundleInfoDto = GetBundleInfoDto(bundleName);
-                if (!_alreadyLoadDic.ContainsKey(bundleName))
+                var assetInfoDto = AssetInfoDtoList.FirstOrDefault(a => a.AssetName == assetName);
+                if (assetInfoDto != null)
                 {
-                    if (bundleInfoDto != null)
-                    {
-                        await LoadAssetBundle(bundleInfoDto);
-                    }
-                    else
-                    {
-                        Interlocked.Exchange(ref _currentLock, FALSE);
-                        return null;
-                    }
+                    bundleName = assetInfoDto.AssetBundleName;
                 }
-                bundleInfoDto.LastUseTime = DateTime.Now;
-                Interlocked.Exchange(ref _currentLock, FALSE);
-                return _alreadyLoadDic[bundleName];
+                else
+                {
+                    Debug.LogError($"没有找到资源:{assetName}对应的包名");
+                    yield break;
+                }
             }
-            else
+            AssetBundleInfoDto bundleInfoDto = GetBundleInfoDto(bundleName);
+            if (!_alreadyLoadDic.ContainsKey(bundleName))
             {
-                await new WaitForRealSeconds(50);
-                goto Begin;
+                if (bundleInfoDto != null)
+                {
+                    yield return GameApp.Instance.StartCoroutine(LoadAssetBundleAsync(bundleInfoDto));
+                }
+                else
+                {
+                    Debug.LogError($"没有找到资源:{bundleName}包");
+                    yield break;
+                }
             }
+
+            AssetBundle assetBundle = _alreadyLoadDic[bundleName];
+            handle.Result = assetBundle.LoadAsset(assetName);
         }
-        private AssetBundleInfoDto GetBundleInfoDto(string bundleName)
+
+        private IEnumerator LoadAssetBundleAsync(AssetBundleInfoDto bundleInfoDto)
         {
-            return AssetBundleInfoDtoList.FirstOrDefault(a => a.AssetBundleName == bundleName);
-        }
-        private async Task<object> LoadAssetBundle(AssetBundleInfoDto bundleInfoDto)
-        {
-            await new WaitForUnityThread();
             AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(AssetBundlePath + "/" + bundleInfoDto.AssetBundleName);
-            await request;
+            yield return request;
+            bundleInfoDto.LastUseTime = DateTime.Now;
             _alreadyLoadDic.Add(bundleInfoDto.AssetBundleName, request.assetBundle);
             foreach (var item in bundleInfoDto.Dependencies)
             {
@@ -190,15 +185,28 @@ namespace TSLuaFramework.Model
                     AssetBundleInfoDto temp = GetBundleInfoDto(item);
                     if (temp != null)
                     {
-                        await LoadAssetBundle(temp);
-                    }
-                    else
-                    {
-                        return null;
+                        yield return GameApp.Instance.StartCoroutine(LoadAssetBundleAsync(temp));
                     }
                 }
             }
-            return null;
+        }
+
+        private void LoadAssetBundle(AssetBundleInfoDto bundleInfoDto)
+        {
+            AssetBundle assetBundle = AssetBundle.LoadFromFile(AssetBundlePath + "/" + bundleInfoDto.AssetBundleName);
+            bundleInfoDto.LastUseTime = DateTime.Now;
+            _alreadyLoadDic.Add(bundleInfoDto.AssetBundleName, assetBundle);
+            foreach (var item in bundleInfoDto.Dependencies)
+            {
+                if (!_alreadyLoadDic.ContainsKey(item))
+                {
+                    AssetBundleInfoDto temp = GetBundleInfoDto(item);
+                    if (temp != null)
+                    {
+                        LoadAssetBundle(temp);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -237,6 +245,5 @@ namespace TSLuaFramework.Model
             /// </summary>
             public string AssetBundleName { get; set; }
         }
-
     }
 }

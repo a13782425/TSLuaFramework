@@ -1,0 +1,14 @@
+ManifestFileVersion: 0
+CRC: 1345053735
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: uipanel
+      Dependencies:
+        Dependency_0: uitexture
+    Info_1:
+      Name: uitexture
+      Dependencies: {}
+    Info_2:
+      Name: uiitem
+      Dependencies: {}

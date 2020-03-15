@@ -26,7 +26,7 @@ end
 
 --region 静态方法
 
-function UIElement.Destroy(element)
+function UIElement.S_Destroy(element)
     element.active = false
     element:Internal_OnDestroy()
     Object.Destroy(element.gameObject)
@@ -34,7 +34,7 @@ function UIElement.Destroy(element)
     delete(element)
     element = nil
 end
-function UIElement.DestroyImmediate(element)
+function UIElement.S_DestroyImmediate(element)
     element.active = false
     element:Internal_OnDestroy()
     Object.DestroyImmediate(element.gameObject)
@@ -459,30 +459,24 @@ UIElement.onMove = {
 ---构造函数
 ---@param obj 游戏物体<可为空>
 function UIElement:ctor(obj)
-    UIElement.base._ctor(self)
     self._gameObject = obj.gameObject
     self._transform = obj.transform
     self._rectTransform = obj:GetComponent(typeof(RectTransform))
-    self._luaActions = {}
 end
 
 function UIElement:_ctor()
     self._gameObject = nil
     self._transform = nil
     self._rectTransform = nil
-    self._luaActions = {}
 end
 
 function UIElement:_dtor()
-    Logger.LogError(self.ClassName .. " dtor")
+    --Logger.LogError(self)
+    --Logger.LogError(self.ClassName .. " dtor")
     if self._uievent ~= nil then
         self._uievent:Destroy()
     end
-    for key, value in pairs(self._luaActions) do
-        delete(value)
-    end
     self._uievent = nil
-    self._luaActions = nil
 end
 
 --region 公共虚函数开始(所有子类可重写)
@@ -531,7 +525,7 @@ end
 
 ---关闭一个界面
 function UIElement:Close()
-    self.Destroy(self)
+    UIManager:S_GetInstance():ClosePanel(self)
 end
 
 ---设置到当前层级的第一位
@@ -542,20 +536,6 @@ end
 ---设置到当前层级的最后一位
 function UIElement:SetAsLastSibling()
     self.rectTransform:SetAsLastSibling()
-end
-
----获得一个LuaAction
----@param action 方法
----@return LuaAction
-function UIElement:GetLuaAction(action)
-    local luaAction = self._luaActions[action]
-    if luaAction then
-        return luaAction
-    else
-        luaAction = LuaAction(self, action)
-        self._luaActions[action] = luaAction
-        return luaAction
-    end
 end
 
 ---添加一个组件

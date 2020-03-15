@@ -1,0 +1,186 @@
+-- added by wsh @ 2017-12-09
+-- 自定义类型
+UILayerEnum = {
+    --- 初始层
+    None = 1 << 0,
+    --- 底部层级
+    Bottom = 1 << 1,
+    --- 普通层级
+    Normal = 1 << 4,
+    --- 固定层级
+    Fixed = 1 << 8,
+    --- 提示层级
+    Tooltip = 1 << 12,
+    --- 弹窗层级
+    Dialog = 1 << 16,
+    --- 公告层级
+    Notice = 1 << 20,
+    --- (最高层级)
+    Max = 1 << 24
+}
+
+local UIManager = BaseClass("UIManager", BaseManager)
+
+local function createMainObj(self)
+    self.MainUIObj =
+        GameObject("MainUI", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster))
+    self.MainUIObj.transform:SetParent(self.transform)
+    self.MainCanvas = self.MainUIObj:GetComponent(typeof(Canvas))
+    self.MainCanvas.renderMode = RenderMode.ScreenSpaceOverlay
+    self.EventSystem =
+        GameObject(
+        "System",
+        typeof(CS.UnityEngine.EventSystems.EventSystem),
+        typeof(CS.UnityEngine.EventSystems.StandaloneInputModule)
+    )
+    self.EventSystem.transform:SetParent(self.transform)
+    self.EventSystem.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector
+end
+
+local function createLayerObj(self)
+    self.RectTranDic = {}
+    for key, value in pairs(UILayerEnum) do
+        local obj = GameObject(tostring(key), typeof(RectTransform), typeof(CanvasGroup))
+        obj.transform:SetParent(self.MainUIObj.transform)
+        local rectTran = obj:GetComponent(typeof(RectTransform))
+        rectTran.anchorMin = Vector2.zero
+        rectTran.anchorMax = Vector2.one
+        rectTran.offsetMax = Vector2.zero
+        rectTran.offsetMin = Vector2.zero
+        self.RectTranDic[value] = rectTran
+    end
+    local temp = {}
+    for key, value in pairs(UILayerEnum) do
+        table.insert(temp, #temp + 1, value)
+    end
+    table.sort(temp)
+    for i, v in ipairs(temp) do
+        self.RectTranDic[v]:SetSiblingIndex(v)
+    end
+end
+
+---实例化一个View
+local function createView(self, uiconfig)
+    local layer = uiconfig.View.Layer or UILayerEnum.Fixed
+    local view = UIView.S_CreateView(uiconfig, self:GetLayerTran(layer))
+    if view.__delete == nil then
+        --显示界面
+        self.Panels:Add(view)
+        return view
+    end
+    return nil
+end
+
+local function GetLayerTran(self, layer)
+    return self.RectTranDic[UILayerEnum.Fixed]
+end
+
+---显示一个界面,如果不存在则创建一个
+---@param uiconfig ui的配置文件_详情请见UIConfig
+local function ShowPanel(self, uiconfig)
+    local target = self:GetPanel(uiconfig)
+    if target == nil then
+        target = self:CreatePanel(uiconfig)
+    end
+    if target then
+        target.active = true
+    end
+end
+
+---创建一个界面,如果不存在则创建一个
+---@param uiconfig ui的配置文件_详情请见UIConfig
+---@return UIView
+local function CreatePanel(self, uiconfig)
+    if IsNull(uiconfig.PrefabObj) and uiconfig.PrefabName ~= nil then
+        uiconfig.PrefabObj = ResourcesManager:S_GetInstance():GetAsset(uiconfig.PrefabName)
+    end
+    return createView(self, uiconfig)
+end
+
+---异步创建一个界面
+---@param uiconfig UI配置
+---@param luaAction LuaAction
+local function CreatePanelAsync(self, uiconfig, luaAction)
+    if IsNull(uiconfig.PrefabObj) and uiconfig.PrefabName ~= nil then
+        ResourcesManager:S_GetInstance():GetAssetAsync(
+            uiconfig.PrefabName,
+            function(obj)
+                uiconfig.PrefabObj = obj
+                local v1 = createView(self, uiconfig)
+                if luaAction then
+                    luaAction.Func(luaAction.Obj, v1)
+                end
+            end
+        )
+    else
+        local v2 = createView(self, uiconfig)
+        if luaAction then
+            luaAction.Func(luaAction.Obj, v2)
+        end
+    end
+end
+
+---异步预加载UI的预制
+local function PreloadUI(uiconfig)
+    if IsNull(uiconfig.PrefabObj) and uiconfig.PrefabName ~= nil then
+        ResourcesManager:S_GetInstance():GetAssetAsync(
+            uiconfig.PrefabName,
+            function(obj)
+                uiconfig.PrefabObj = obj
+            end
+        )
+    end
+end
+---关闭一个界面
+local function ClosePanel(self, panel)
+    if panel and IsType(panel, UIView) and panel.ClassType == ClassType.instance then
+        self.Panels:Remove(panel)
+        UIView.S_Destroy(panel)
+    end
+end
+
+---获取一个Panel
+local function GetPanel(self, uiconfig)
+    local value =
+        self.Panels:Find(
+        function(value)
+            return value.ViewName == uiconfig.ViewName
+        end
+    )
+    return value
+end
+
+-- 启动
+local function Startup(self)
+    createMainObj(self)
+    createLayerObj(self)
+    --所有创建出来的界面
+    self.Panels = Set()
+end
+
+-- 释放
+local function Dispose(self)
+end
+
+UIManager.Startup = Startup
+UIManager.Dispose = Dispose
+---显示一个界面,如果不存在则创建一个(创建同步)
+---@param uiconfig ui的配置文件_详情请见UIConfig
+---@return UIView
+UIManager.ShowPanel = ShowPanel
+---创建一个界面,如果不存在则创建一个
+---@param uiconfig ui的配置文件_详情请见UIConfig
+---@return UIView
+UIManager.CreatePanel = CreatePanel
+---异步创建一个界面
+---@param uiconfig UI配置
+---@param luaAction LuaAction
+UIManager.CreatePanelAsync = CreatePanelAsync
+---关闭一个界面
+UIManager.ClosePanel = ClosePanel
+---异步预加载UI的预制
+---@param uiconfig UI配置
+UIManager.PreloadUI = PreloadUI
+UIManager.GetPanel = GetPanel
+UIManager.GetLayerTran = GetLayerTran
+return UIManager

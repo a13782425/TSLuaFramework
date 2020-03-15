@@ -1,0 +1,42 @@
+------------------------------------------------------------------------------------------------------------
+-----------------------------------generate file 2020-03-15 14:25:29----------------------------------------
+------------------------------------------------------------------------------------------------------------
+
+local TestPanel_Gen = require 'UI.Panel.View.TestPanelView'
+
+TestPanel_Gen.InitializeElement = function(self)
+
+    self.tran_content = self.transform:Find('tran_content')
+    self.raw_txt_text = self.transform:Find('txt_text'):GetComponent(typeof(Text))
+    self.txt_text = self:BindingElement(self.raw_txt_text)
+    self.raw_inp_input = self.transform:Find('inp_input'):GetComponent(typeof(InputField))
+    self.inp_input = self:BindingElement(self.raw_inp_input)
+    self.raw_btn_test = self.transform:Find('btn_test'):GetComponent(typeof(Button))
+    self.btn_test = self:BindingElement(self.raw_btn_test)
+    self.raw_img_bb = self.transform:Find('img_bb'):GetComponent(typeof(Image))
+    self.img_bb = self:BindingElement(self.raw_img_bb)
+    self.raw_img_aa = self.transform:Find('img_aa'):GetComponent(typeof(Image))
+    self.img_aa = self:BindingElement(self.raw_img_aa)
+
+end
+
+local TestPanel1_Gen = require 'UI.Panel.View.TestPanel1View'
+
+TestPanel1_Gen.InitializeElement = function(self)
+
+    self.raw_btn_test = self.transform:Find('btn_test'):GetComponent(typeof(Button))
+    self.btn_test = self:BindingElement(self.raw_btn_test)
+    self.raw_img_bb = self.transform:Find('img_bb'):GetComponent(typeof(Image))
+    self.img_bb = self:BindingElement(self.raw_img_bb)
+    self.raw_img_aa = self.transform:Find('img_aa'):GetComponent(typeof(Image))
+    self.img_aa = self:BindingElement(self.raw_img_aa)
+
+end
+
+local TestItem_Gen = require 'UI.Item.View.TestItemView'
+
+TestItem_Gen.InitializeElement = function(self)
+
+
+end
+

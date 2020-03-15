@@ -13,62 +13,60 @@
 -- 2、使用弱引用，即使监听不手动移除，消息系统也不会持有对象引用，所以对象的销毁是不受消息系统影响的
 -- 3、换句话说：广播发出，回调一定会被调用，但回调参数中的实例对象，可能已经被销毁，所以回调函数一定要注意判空
 --]]
-
-local Messenger = BaseClass("Messenger");
+local Messenger = BaseClass("Messenger")
 
 local function _ctor(self)
-	self.events = {}
+    self.events = {}
 end
 
 local function _dtor(self)
-	self.events = nil	
-	self.error_handle = nil
+    self.events = nil
 end
 
-local function AddListener(self, e_type, e_listener, ...)
-	local event = self.events[e_type]
-	if event == nil then
-		event = setmetatable({}, {__mode = "k"})
-	end
-	
-	for k, v in pairs(event) do
-		if k == e_listener then
-			error("Aready cotains listener : "..tostring(e_listener))
-			return
-		end
-	end
-	event[e_listener] = setmetatable(SafePack(...), {__mode = "kv"}) 
-	self.events[e_type] = event;
+local function AddListener(self, e_type, e_luaAction, ...)
+    local event = self.events[e_type]
+    if event == nil then
+        event = setmetatable({}, {__mode = "k"})
+    end
+
+    for k, v in pairs(event) do
+        if k == e_luaAction then
+            error("Aready cotains listener : " .. tostring(e_luaAction))
+            return
+        end
+    end
+    event[e_luaAction] = setmetatable(SafePack(...), {__mode = "kv"})
+    self.events[e_type] = event
 end
 
 local function Broadcast(self, e_type, ...)
-	local event = self.events[e_type]
-	if event == nil then
-		return
-	end
-	
-	for k, v in pairs(event) do
-		assert(k ~= nil)
-		local args = ConcatSafePack(v, SafePack(...))
-		k(SafeUnpack(args))
-	end
+    local event = self.events[e_type]
+    if event == nil then
+        return
+    end
+
+    for k, v in pairs(event) do
+        assert(k ~= nil)
+        local args = ConcatSafePack(v, SafePack(...))
+        k.Func(k.Obj, SafeUnpack(args))
+    end
 end
 
-local function RemoveListener(self, e_type, e_listener)
-	local event = self.events[e_type]
-	if event == nil then
-		return
-	end
+local function RemoveListener(self, e_type, e_luaAction)
+    local event = self.events[e_type]
+    if event == nil then
+        return
+    end
 
-	event[e_listener] = nil
+    event[e_luaAction] = nil
 end
 
 local function RemoveListenerByType(self, e_type)
-	self.events[e_type] = nil
+    self.events[e_type] = nil
 end
 
 local function Cleanup(self)
-	self.events = {};
+    self.events = {}
 end
 
 Messenger._ctor = _ctor
@@ -79,4 +77,4 @@ Messenger.RemoveListener = RemoveListener
 Messenger.RemoveListenerByType = RemoveListenerByType
 Messenger.Cleanup = Cleanup
 
-return Messenger;
+return Messenger

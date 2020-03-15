@@ -9,6 +9,7 @@ UIText.text = {
         self.Component.text = tostring(value)
     end
 }
+UIText.DefaultField = 'text'
 
 function UIText:ctor(uiview, unity_object)
     UIComponent.ctor(self, uiview, unity_object)

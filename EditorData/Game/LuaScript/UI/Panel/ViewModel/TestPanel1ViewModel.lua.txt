@@ -1,0 +1,12 @@
+local TestPanel1ViewModel = BaseClass("TestPanel1ViewModel",BindingModel);
+
+---初始化数据
+function TestPanel1ViewModel:Initlialize()
+	--例如self.字段名 = BindableProperty(字段名);
+end
+
+---释放数据
+function TestPanel1ViewModel:Dispose()
+end
+
+return TestPanel1ViewModel
