@@ -1,0 +1,29 @@
+local HttpPeer = BaseClass("HttpPeer", BasePeer)
+
+function HttpPeer:_ctor()
+    -- self.
+    self.tcp = socket.tcp()
+    self.tcp:settimeout(30)
+end
+
+function HttpPeer:Connect(ip, port)
+    ip = ip or "127.0.0.1"
+    port = port or "5000"
+    if self.tcp then
+        self.tcp.connect(ip, port)
+    end
+end
+
+function HttpPeer:Close()
+    if self.tcp then
+        self.tcp:close()
+    end
+end
+
+function HttpPeer:_dtor()
+    if self.tcp then
+        self.tcp:close()
+    end
+end
+
+return HttpPeer

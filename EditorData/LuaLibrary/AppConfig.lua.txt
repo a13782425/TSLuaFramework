@@ -1,3 +1,6 @@
+--Lua核心类
+socket = require "socket.core"
+
 -- Begin Custom Lua
 Logger = require "Logger.Logger"
 
@@ -22,6 +25,14 @@ Set = require "Container.Set"
 ---栈
 Stack = require "Container.Stack"
 
+---网络
+
+BasePeer = require "Common.Network.BasePeer"
+TcpPeer = require "Common.Network.TcpPeer"
+UdpPeer = require "Common.Network.UdpPeer"
+HttpPeer = require "Common.Network.HttpPeer"
+
+---其他
 require "Tool.event"
 require "Update.Coroutine"
 Timer = require "Update.Timer"

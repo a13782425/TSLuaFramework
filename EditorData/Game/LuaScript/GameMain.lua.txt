@@ -49,7 +49,8 @@ GameMain = {}
 -- function Test1:Abc()
 --     Logger.Log("我是子类" .. self.ClassName)
 -- end
-
+local sock = nil
+local co = nil
 local function Start()
     Logger.Log("GameMain start...")
 
@@ -60,6 +61,27 @@ local function Start()
     ResourcesManager:S_GetInstance():Startup()
     UIManager:S_GetInstance():Startup()
     UIManager:S_GetInstance():ShowPanel(UIConfig.Panel.TestPanel)
+    -- sock = TcpPeer()
+    -- sock.onConnected:addEvent(
+    --     LuaAction(
+    --         self,
+    --         function(self)
+    --             Logger.LogError("网络连接上")
+    --         end
+    --     )
+    -- )
+    -- sock:Connect()
+    -- sock:Send("测试")
+    -- Logger.LogError(require "socket.core")
+    --sock = Socket.connect4("127.0.0.1", "5000")
+    --Logger.LogError(sock:getoption("keepalive"))
+    -- co = coroutine.create(function()
+    --     repeat
+    --         local chunk, status, partial = sock:receive(1024) -- 以 1K 的字节块来接收数据，并把接收到字节块输出来
+    --         print(chunk or partial)
+    --     until status ~= "closed"
+    --     Logger.LogError("Socket Close")
+    -- end)
 end
 
 local function OnApplicationQuit()

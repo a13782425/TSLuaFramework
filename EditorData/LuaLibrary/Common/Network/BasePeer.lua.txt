@@ -1,0 +1,54 @@
+local BasePeer = BaseClass("BasePeer")
+
+BasePeer.IsConnect = {
+    getter = function(self)
+        return self._isConnect
+    end
+}
+---连接上之后的回调
+---无参回调
+BasePeer.onConnected = {
+    addEvent = function(self, luaAction)
+        self._onConnectedSet:Add(luaAction)
+    end,
+    removeEvent = function(self, luaAction)
+        self._onConnectedSet:Remove(luaAction)
+    end,
+    callEvent = function(self)
+        self._onConnectedSet:ForEach(
+            function(luaAction)
+                luaAction.Func(luaAction.Obj)
+            end
+        )
+    end
+}
+---连接失败的回调
+---错误信息
+BasePeer.onConnectFailure = {
+    addEvent = function(self, luaAction)
+        self._onConnectFailureSet:Add(luaAction)
+    end,
+    removeEvent = function(self, luaAction)
+        self._onConnectFailureSet:Remove(luaAction)
+    end,
+    ---msg = 错误信息
+    callEvent = function(self, msg)
+        self._onConnectFailureSet:ForEach(
+            function(luaAction)
+                luaAction.Func(luaAction.Obj, msg)
+            end
+        )
+    end
+}
+
+function BasePeer:_ctor()
+    self._onConnectedSet = Set()
+    self._onConnectFailureSet = Set()
+end
+
+function BasePeer:_dtor()
+    delete(self._onConnectedSet)
+    delete(self._onConnectFailureSet)
+end
+
+return BasePeer

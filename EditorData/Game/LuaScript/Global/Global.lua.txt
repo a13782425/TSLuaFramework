@@ -1,3 +1,7 @@
+-- UIConfig
+require 'UI.Config.UILayerEnum'
+UIConfig = require 'UI.Config.UIConfig'
+UICreator = require 'UI.Config.UICreator'
 
 
 -- Manager
@@ -6,8 +10,6 @@ TimerManager = require 'Update.TimerManager'
 ResourcesManager = require 'Manager.ResourcesManager'
 UIManager = require 'Manager.UIManager'
 CameraManager = require 'Manager.CameraManager'
--- UI
-UIConfig = require 'UI.Config.UIConfig'
-UICreator = require 'UI.Config.UICreator'
+NetManager = require 'Manager.NetManager'
 
 GameAppObj = GameObject.Find("GameApp")

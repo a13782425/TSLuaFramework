@@ -472,7 +472,7 @@ end
 
 function UIElement:_dtor()
     --Logger.LogError(self)
-    --Logger.LogError(self.ClassName .. " dtor")
+    Logger.LogError(self.ClassName .. " dtor")
     if self._uievent ~= nil then
         self._uievent:Destroy()
     end

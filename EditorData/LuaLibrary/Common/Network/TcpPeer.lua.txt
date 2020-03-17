@@ -1,0 +1,106 @@
+local TcpPeer = BaseClass("TcpPeer", BasePeer)
+
+function TcpPeer:_ctor()
+    -- self.
+    self.peer = socket.tcp()
+    self.peer:settimeout(0.1)
+    self._loop = true
+    coroutine.create(self.ListenerLoop, self)
+    -- self:ListenerLoop(ListenerLoop,self)
+end
+
+function TcpPeer:Connect(ip, port)
+    ip = ip or "127.0.0.1"
+    port = port or 5000
+    if self.peer then
+        local code, msg = self.peer:connect(ip, port)
+        if code == nil then
+            self._isConnect = false
+            self.onConnectFailure:callEvent(msg)
+        else
+            self._isConnect = true
+            self.onConnected:callEvent()
+        end
+    end
+end
+
+function TcpPeer.ListenerLoop(self)
+    while self._loop do
+        if self.IsConnect then
+            local msg, status, partial = self.peer:receive(1024)
+            Logger.LogError("msg:" .. tostring(msg))
+            Logger.LogError("status:" .. tostring(status))
+            Logger.LogError("partial:" .. tostring(partial))
+            if msg ~= nil then
+                if msg == "STOP" then
+                    self._loop = false
+                else
+                    print("read " .. rb)
+                end
+            end
+        end
+    end
+    -- local loop = function(peer)
+    --     while peer._loop do
+    --         if peer.IsConnect then
+    --             local msg, status, partial = peer.peer:receive(1024)
+    --             Logger.LogError("msg:" .. msg)
+    --             Logger.LogError("status:" .. status)
+    --             Logger.LogError("partial:" .. partial)
+    --             if msg ~= nil then
+    --                 if msg == "STOP" then
+    --                     peer._loop = true
+    --                 else
+    --                     print("read " .. rb)
+    --                 end
+    --             end
+    --         end
+    --     end
+    -- end
+    -- local co = coroutine.create(loop, self)
+    --coroutine.resume(co, self)
+    -- while self.peer do
+    --     local client, err = tcp:accept()
+    --     if client ~= nill then
+    --         local co
+    --         local fn = function(sock)
+    --             while not stop do
+    --                 local rb, err = sock:receive(1024)
+    --                 if rb ~= nil then
+    --                     if rb == "STOP" then
+    --                         stop = true
+    --                     else
+    --                         print("read " .. rb)
+    --                         sock:send(rb)
+    --                     end
+    --                 end
+    --             end
+    --             -- coroutine.resume(co, sock)
+    --         end
+    --         co = coroutine.create(fn)
+    --         coroutine.resume(co, client)
+    --     end
+    -- end
+end
+
+function TcpPeer:Send(msg)
+    if self.peer and self.IsConnect then
+        self.peer:send(msg)
+    end
+end
+
+function TcpPeer:Close()
+    if self.peer and self.IsConnect then
+        self.peer:close()
+    end
+end
+
+function TcpPeer:_dtor()
+    if self.peer and self.IsConnect then
+        self.peer:close()
+    end
+    self._loop = false
+    self.peer = nil
+end
+
+return TcpPeer

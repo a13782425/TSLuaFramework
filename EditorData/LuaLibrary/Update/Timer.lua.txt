@@ -9,7 +9,7 @@
 local Timer = BaseClass("Timer")
 
 -- 构造函数
-local function _ctor(self, delay, func, obj, one_shot, use_frame, unscaled)
+local function ctor(self, delay, func, obj, one_shot, use_frame, unscaled)
 	-- 成员变量
 	-- weak表，保证定时器不影响目标对象的回收
 	self.target = setmetatable({}, {__mode = "v"})
@@ -150,7 +150,7 @@ local function IsOver(self)
 	return self.over
 end
 
-Timer._ctor = _ctor
+Timer.ctor = ctor
 Timer.Init = Init
 Timer.Update = Update
 Timer.Start = Start

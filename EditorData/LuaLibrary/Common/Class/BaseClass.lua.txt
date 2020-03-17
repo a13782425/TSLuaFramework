@@ -114,7 +114,7 @@ function global__index(table, key)
     local meta = getmetatable(table)
     meta = getmetatable(meta.instance)
     --如果当前访问的为事件关键字则先查找是否有对应的事件方法
-    if key == "addEvent" or key == "removeEvent" then
+    if key == "addEvent" or key == "removeEvent" or key == "callEvent" then
         if meta.__eventName ~= nil then
             local eventName = meta.__eventName
             meta.__eventName = nil
@@ -282,6 +282,7 @@ local function parseClass(class)
                     events[k] = copy
                     functions.__eventFuncs[k .. "__addEvent"] = copy.addEvent
                     functions.__eventFuncs[k .. "__removeEvent"] = copy.removeEvent
+                    functions.__eventFuncs[k .. "__callEvent"] = copy.callEvent
                 else
                     --这是一个正常表
                     if Keywords[k] == nil then
@@ -426,10 +427,6 @@ function BaseClass(classname, base)
 end
 
 local function del(ins, c)
-    -- if IsType(class, UIElement) then
-    --     Logger.LogWarning(class.ClassName)
-    --     Logger.LogWarning(c)
-    -- end
     c._dtor(ins)
     if c.base then
         del(ins, c.base)

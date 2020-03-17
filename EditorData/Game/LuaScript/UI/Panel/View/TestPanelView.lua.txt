@@ -11,9 +11,10 @@ local TestPanelView = BaseClass("TestPanelView", UIPanel)
 
 local function Test(self, obj)
     Logger.LogError("Click")
-    self.ViewModel.aa_color = Color(1, 1, 0)
-    self:Close()
-    UIManager:S_GetInstance():ShowPanel(UIConfig.Panel.TestPanel1)
+    -- self.ViewModel.aa_color = Color(1, 1, 0)
+    -- self:Close()
+    -- UIManager:S_GetInstance():ShowPanel(UIConfig.Panel.TestPanel1)
+    self.peer:Send("你猜")
 end
 local function Test1(self, old, new)
     return self.ClassName .. ":" .. tostring(new)
@@ -31,6 +32,8 @@ function TestPanelView:OnCreate()
     self.inp_input.text = "测试"
     self.btn_test.onDoubleClick:addEvent(self:GetLuaAction(Test))
     self:AddSubItem(UIConfig.Item.TestItem, self.tran_content)
+    self.peer = TcpPeer()
+    self.peer:Connect()
     -- self:Close()
 end
 

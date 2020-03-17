@@ -1,0 +1,23 @@
+local NetManager = BaseClass("NetManager", BaseManager)
+local socket = require("socket.core")
+
+
+function NetManager:Startup()
+
+end
+
+function NetManager:Connect(ip, host)
+    local ip = ip or "127.0.0.1"
+    local port = port or "5000"
+    if self._sock == nil then
+        self._sock = Socket.connect4(ip, port)
+    end
+end
+
+function NetManager:Send(msg)
+
+end
+
+
+
+return NetManager

@@ -1,23 +1,6 @@
 -- added by wsh @ 2017-12-09
 -- 自定义类型
-UILayerEnum = {
-    --- 初始层
-    None = 1 << 0,
-    --- 底部层级
-    Bottom = 1 << 1,
-    --- 普通层级
-    Normal = 1 << 4,
-    --- 固定层级
-    Fixed = 1 << 8,
-    --- 提示层级
-    Tooltip = 1 << 12,
-    --- 弹窗层级
-    Dialog = 1 << 16,
-    --- 公告层级
-    Notice = 1 << 20,
-    --- (最高层级)
-    Max = 1 << 24
-}
+
 
 local UIManager = BaseClass("UIManager", BaseManager)
 

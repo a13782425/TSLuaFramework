@@ -18,7 +18,8 @@ local TestPanel1View = BaseClass("TestPanel1View", UIPanel)
 --self:GetLuaAction(action) --获得一个LuaAction,框架内lua的方法委托都要使用到
 --self:Close() --关闭一个Panel
 
----界面组件定义开始---self.btn_test
+---界面组件定义开始
+---self.btn_test
 ---self.img_bb
 ---self.img_aa
 ---界面组件定义结束
